@@ -100,20 +100,6 @@ public class DimensionPlayer extends GenericSprite implements Player
 
 	}
 
-	class KeyReleasedHandler implements EventHandler<KeyEvent>
-	{
-
-		private final EnumSet<KeyCode> arrowKeys = EnumSet.of(KeyCode.LEFT, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.UP);
-		
-		@Override
-		public void handle(KeyEvent event)
-		{
-			if(arrowKeys.contains(event.getCode()))
-				direction = 0;
-		}
-
-	}
-
 	@Override
 	public void setWorldX()
 	{
@@ -133,5 +119,42 @@ public class DimensionPlayer extends GenericSprite implements Player
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void moveRight()
+	{
+		direction = RIGHT;
+	}
+
+	@Override
+	public void moveLeft()
+	{
+		direction = LEFT;		
+	}
+
+	@Override
+	public void moveUp()
+	{
+		direction = UP;
+	}
+
+	@Override
+	public void moveDown()
+	{
+		direction = DOWN;
+	}
+
+	@Override
+	public int compareTo(Sprite o)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void stop()
+	{
+		direction = 0;
 	}
 }
