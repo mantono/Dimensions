@@ -1,8 +1,11 @@
 package dimensions.client.engine.spriteinterfaces;
 
-import javafx.geometry.Bounds;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.image.PixelReader;
 
 public interface Collidable extends Moveable
 {
-	Bounds[] getHitBoxes();
+	Rectangle2D[] getHitBoxes();
+	boolean intersects(Rectangle2D[] bounds);
+	boolean hasPixelCollision(PixelReader pixels);
 }

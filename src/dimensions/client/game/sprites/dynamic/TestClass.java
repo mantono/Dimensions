@@ -1,50 +1,19 @@
 package dimensions.client.game.sprites.dynamic;
 
-import dimensions.client.engine.AbstractSprite;
 import dimensions.client.engine.spriteinterfaces.Moveable;
-import dimensions.client.engine.spriteinterfaces.Sprite;
-import dimensions.client.game.sprites.statics.Mud;
-import javafx.geometry.Bounds;
+import dimensions.client.game.sprites.GenericSprite;
 
-public class TestClass extends AbstractSprite implements Moveable
+public class TestClass extends GenericSprite implements Moveable
 {
 	private int direction = 1;
 
 	public TestClass()
 	{
-		super(Mud.class.getResource("/dimensions/client/game/assets/images/textures/mud.png").toString());
+		super("mud.png");
 		setX(100);
 		setY(160);
 	}
-
-	@Override
-	public boolean isOutsideScreen()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public int distanceFromScreen()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public boolean isReadyToRemove()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public int compareTo(Sprite arg0)
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
+	
 	@Override
 	public void move()
 	{
@@ -58,17 +27,23 @@ public class TestClass extends AbstractSprite implements Moveable
 	}
 
 	@Override
-	public Bounds getBounds()
+	public void setWorldX()
 	{
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 	@Override
-	public double getZ()
+	public void setWorldY()
 	{
 		// TODO Auto-generated method stub
-		return 0;
+		
 	}
 
+	@Override
+	public void setWorldZ()
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }

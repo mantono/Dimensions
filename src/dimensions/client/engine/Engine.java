@@ -1,7 +1,12 @@
 package dimensions.client.engine;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -10,37 +15,41 @@ import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.Moveable;
 import dimensions.client.engine.spriteinterfaces.NPC;
 import dimensions.client.engine.spriteinterfaces.Player;
+import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.dynamic.DimensionPlayer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class Engine implements EventHandler<ActionEvent>
 {
 	private final Stage stage;
 	private final Scene scene;
-	private final Group root, moveable, light;
+	private final Group root;
 	private final Canvas canvas;
 	private final GraphicsContext renderer;
 
 	private final GameSettings settings;
-	private boolean keepRunning = true;
 
 	private Player player;
 
-	private final Set<AbstractSprite> statics = new HashSet<AbstractSprite>();
+	private final Set<Sprite> sprites = new HashSet<Sprite>();
 	private final Set<NPC> npcs = new HashSet<NPC>();
-	private final Set<Moveable> moveableSprites = new HashSet<Moveable>();
+	private final Set<Moveable> moveables = new HashSet<Moveable>();
 	private final Set<Collidable> collidables = new HashSet<Collidable>();
 
 	private final BlockingQueue<NPC> npcQueue = new PriorityBlockingQueue<NPC>(50);
 	private final BlockingQueue<Moveable> moveableQueue = new PriorityBlockingQueue<Moveable>(40);
-	private final BlockingQueue<AbstractSprite> staticSpriteQueue = new PriorityBlockingQueue<AbstractSprite>(60);
+	private final BlockingQueue<Sprite> spriteQueue = new PriorityBlockingQueue<Sprite>(60);
+	
+	private final Map<KeyCode, Method> keyBindings = new HashMap<KeyCode, Method>();
 
 	public Engine(Stage stage)
 	{
@@ -51,18 +60,17 @@ public class Engine implements EventHandler<ActionEvent>
 	{
 		this.stage = stage;
 		this.settings = settings;
-
-		this.moveable = new Group();
-		this.light = new Group();
-		this.root = new Group(moveable, light);
-
+		
+		this.root = new Group();
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
 
 		this.canvas = new Canvas(settings.width, settings.height);
 		this.renderer = canvas.getGraphicsContext2D();
 		this.root.getChildren().add(canvas);
-
+		
+		root.setOnKeyPressed(new KeyEventHandler());
+		//canvas.setOnKeyPressed(new KeyEventHandler());
 	}
 
 	public void addNPC(final NPC npc)
@@ -75,25 +83,34 @@ public class Engine implements EventHandler<ActionEvent>
 	{
 		pollQueues();
 		moveMoveables();
+		actNPC();
 		checkForCollisons();
 		removeSprites();
+		updateGraphics();
 		if(player != null)
 		{
 			root.setTranslateX(player.getX());
 			root.setTranslateY(player.getY());
 		}
-		
+
 	}
 
-	// public void updateGraphics()
-	// {
-	// for(Sprite sprite : root.getChildren())
-	// renderer.drawImage(sprite.getTexture(), sprite.getX(), sprite.getY());
-	// }
+	private void actNPC()
+	{
+		for(NPC npc : npcs)
+			npc.act();
+	}
+
+	public void updateGraphics()
+	{
+		renderer.clearRect(0, 0, settings.width, settings.height);
+		for(Sprite sprite : sprites)
+			sprite.render(renderer);
+	}
 
 	private void removeSprites()
 	{
-		Iterator<AbstractSprite> iterStatics = statics.iterator();
+		Iterator<Sprite> iterStatics = sprites.iterator();
 		while(iterStatics.hasNext())
 			if(iterStatics.next().isReadyToRemove())
 				iterStatics.remove();
@@ -112,11 +129,7 @@ public class Engine implements EventHandler<ActionEvent>
 
 	private void moveMoveables()
 	{
-		if(player != null)
-			player.move();
-		for(Moveable sprite : npcs)
-			sprite.move();
-		for(Moveable sprite : moveableSprites)
+		for(Moveable sprite : moveables)
 			sprite.move();
 	}
 
@@ -127,27 +140,28 @@ public class Engine implements EventHandler<ActionEvent>
 		{
 			npcs.add(npc);
 			collidables.add(npc);
-			moveableSprites.add(npc);
+			moveables.add(npc);
+			sprites.add(npc);
 		}
 
 		Moveable moveable = moveableQueue.poll();
 		if(moveable != null)
 		{
-			moveableSprites.add(moveable);
-			root.getChildren().add((AbstractSprite) moveable);
+			moveables.add(moveable);
+			sprites.add(moveable);
 		}
 
-		Node sprite = staticSpriteQueue.poll();
+		Sprite sprite = spriteQueue.poll();
 		if(sprite != null)
 		{
-			root.getChildren().add(sprite);
+			sprites.add(sprite);
 		}
 
 	}
 
-	public void addStaticSprite(AbstractSprite sprite)
+	public void addSprite(Sprite sprite)
 	{
-		staticSpriteQueue.offer(sprite);
+		spriteQueue.offer(sprite);
 	}
 
 	public void addMoveable(Moveable moveable)
@@ -161,6 +175,39 @@ public class Engine implements EventHandler<ActionEvent>
 		{
 			this.player = player;
 			addMoveable(player);
+			
+			try
+			{
+				Class<? extends Player> c = player.getClass();
+				keyBindings.put(KeyCode.RIGHT,c.getMethod("move"));
+			}
+			catch(NoSuchMethodException | SecurityException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+	}
+	
+	class KeyEventHandler implements EventHandler<KeyEvent>
+	{
+
+		@Override
+		public void handle(KeyEvent event)
+		{
+			final Method method = keyBindings.get(event.getCode());
+			if(method == null)
+				return;
+			try
+			{
+				method.invoke(player);
+			}
+			catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 }

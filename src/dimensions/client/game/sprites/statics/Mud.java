@@ -2,8 +2,7 @@ package dimensions.client.game.sprites.statics;
 
 import dimensions.client.engine.AbstractSprite;
 import dimensions.client.engine.spriteinterfaces.Sprite;
-import javafx.geometry.Bounds;
-import javafx.geometry.Rectangle2D;
+import javafx.scene.canvas.GraphicsContext;
 
 public class Mud extends AbstractSprite
 {
@@ -16,19 +15,6 @@ public class Mud extends AbstractSprite
 //		image = new Image(path);
 	}
 
-	@Override
-	public boolean isOutsideScreen()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public int distanceFromScreen()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public boolean isReadyToRemove()
@@ -51,10 +37,26 @@ public class Mud extends AbstractSprite
 		return 0;
 	}
 
+
 	@Override
-	public Bounds getBounds()
+	public void setX(double x)
 	{
-		return getBoundsInLocal();
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setY(double y)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setZ(double z)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

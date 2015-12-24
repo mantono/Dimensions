@@ -3,9 +3,12 @@ package dimensions.client.game.sprites.dynamic;
 import java.util.EnumSet;
 
 import dimensions.client.engine.spriteinterfaces.Player;
+import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.image.PixelReader;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -22,8 +25,8 @@ public class DimensionPlayer extends GenericSprite implements Player
 	public DimensionPlayer()
 	{
 		super("player.png");
-		setOnKeyPressed(new KeyPressedHandler());
-		setOnKeyReleased(new KeyReleasedHandler());
+//		setOnKeyPressed(new KeyPressedHandler());
+//		setOnKeyReleased(new KeyReleasedHandler());
 	}
 
 	@Override
@@ -60,10 +63,23 @@ public class DimensionPlayer extends GenericSprite implements Player
 	}
 
 	@Override
-	public Bounds[] getHitBoxes()
+	public Rectangle2D[] getHitBoxes()
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+
+	@Override
+	public boolean intersects(Rectangle2D[] bounds)
+	{
+		return false;
+	}
+
+	@Override
+	public boolean hasPixelCollision(PixelReader pixels)
+	{
+		return false;
 	}
 
 	class KeyPressedHandler implements EventHandler<KeyEvent>
@@ -96,5 +112,26 @@ public class DimensionPlayer extends GenericSprite implements Player
 				direction = 0;
 		}
 
+	}
+
+	@Override
+	public void setWorldX()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setWorldY()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setWorldZ()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
