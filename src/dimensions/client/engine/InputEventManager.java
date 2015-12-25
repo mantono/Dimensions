@@ -44,19 +44,19 @@ public class InputEventManager
 	
 	public void createDefaultKeyBindings(Player player)
 	{
-		addKeyBinding(KeyCode.RIGHT, e -> player.moveRight());
-		addKeyBinding(KeyCode.LEFT, e -> player.moveLeft());
-		addKeyBinding(KeyCode.UP, e -> player.moveUp());
-		addKeyBinding(KeyCode.DOWN, e -> player.moveDown());
+		addKeyBinding(KeyCode.RIGHT, e -> player.rightPressed());
+		addKeyBinding(KeyCode.LEFT, e -> player.leftPressed());
+		addKeyBinding(KeyCode.UP, e -> player.upPressed());
+		addKeyBinding(KeyCode.DOWN, e -> player.downPressed());
 
 		KeyBinding eventStop = new KeyBinding(KeyEvent.KEY_RELEASED, KeyCode.RIGHT);
-		addKeyBinding(eventStop, e -> player.stop());
+		addKeyBinding(eventStop, e -> player.rightReleased());
 		eventStop = new KeyBinding(KeyEvent.KEY_RELEASED, KeyCode.LEFT);
-		addKeyBinding(eventStop, e -> player.stop());
+		addKeyBinding(eventStop, e -> player.leftReleased());
 		eventStop = new KeyBinding(KeyEvent.KEY_RELEASED, KeyCode.UP);
-		addKeyBinding(eventStop, e -> player.stop());
+		addKeyBinding(eventStop, e -> player.upReleased());
 		eventStop = new KeyBinding(KeyEvent.KEY_RELEASED, KeyCode.DOWN);
-		addKeyBinding(eventStop, e -> player.stop());
+		addKeyBinding(eventStop, e -> player.downReleased());
 
 	}
 

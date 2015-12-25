@@ -101,5 +101,18 @@ public class SimpleNPC extends GenericSprite implements NPC
 		
 	}
 
+	@Override
+	public boolean hasFixedScreenPosition()
+	{
+		return false;
+	}
+
+	@Override
+	public int compareTo(Sprite o)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 
 }

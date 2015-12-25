@@ -1,7 +1,5 @@
 package dimensions.client.engine;
 
-import com.sun.org.apache.bcel.internal.generic.RETURN;
-
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -21,6 +19,23 @@ public abstract class AbstractSprite implements Sprite
 		this.bounds = new Rectangle2D(x, y, texture.getWidth(), texture.getHeight());
 	}
 
+	protected Image getTexture()
+	{
+		return texture;
+	}
+
+	@Override
+	public double getWidth()
+	{
+		return texture.getWidth();
+	}
+
+	@Override
+	public double getHeight()
+	{
+		return texture.getHeight();
+	}
+
 	@Override
 	public void render(GraphicsContext context)
 	{
@@ -30,7 +45,7 @@ public abstract class AbstractSprite implements Sprite
 	@Override
 	public boolean isOutsideScreen(GameSettings settings)
 	{
-		return x < 0 || y < 0 || x > settings.width || y > settings.height;
+		return x < 0 || y < 0 || x > settings.widthWindow || y > settings.heightWindow;
 	}
 
 	@Override
@@ -40,19 +55,19 @@ public abstract class AbstractSprite implements Sprite
 			return 0;
 		double distanceX = 0;
 		double distanceY = 0;
-		
+
 		if(x < 0)
 			distanceX = x;
 		else if(x > 0)
-			distanceX = x - settings.width;
-		
+			distanceX = x - settings.widthWindow;
+
 		if(y < 0)
 			distanceY = y;
 		else if(y > 0)
-			distanceY = y - settings.height;
-		
+			distanceY = y - settings.heightWindow;
+
 		return distanceX > distanceY ? distanceX : distanceY;
-		
+
 	}
 
 	@Override

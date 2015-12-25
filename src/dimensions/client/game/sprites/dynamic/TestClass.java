@@ -1,6 +1,7 @@
 package dimensions.client.game.sprites.dynamic;
 
 import dimensions.client.engine.spriteinterfaces.Moveable;
+import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
 
 public class TestClass extends GenericSprite implements Moveable
@@ -45,5 +46,18 @@ public class TestClass extends GenericSprite implements Moveable
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int compareTo(Sprite o)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean hasFixedScreenPosition()
+	{
+		return false;
 	}
 }

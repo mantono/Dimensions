@@ -6,4 +6,5 @@ public interface Moveable extends Sprite
 	void setWorldX();
 	void setWorldY();
 	void setWorldZ();
+	boolean hasFixedScreenPosition();
 }

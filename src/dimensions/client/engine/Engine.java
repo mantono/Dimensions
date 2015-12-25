@@ -11,23 +11,33 @@ import dimensions.client.engine.spriteinterfaces.Moveable;
 import dimensions.client.engine.spriteinterfaces.NPC;
 import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.engine.spriteinterfaces.Sprite;
+import dimensions.client.game.sprites.GenericSprite;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Engine implements EventHandler<ActionEvent>
 {
 	private final Stage stage;
 	private final Scene scene;
 	private final Group root;
-	private final Canvas canvas;
-	private final GraphicsContext renderer;
+	private final Canvas mainCanvas, playerCanvas, hudCanvas;
+	private final GraphicsContext mainRenderer, playerRenderer, hudRenderer;
 
 	private final GameSettings settings;
+	
+	private final Timeline loop;
 
 	private Player player;
 
@@ -44,11 +54,14 @@ public class Engine implements EventHandler<ActionEvent>
 
 	public Engine(Stage stage)
 	{
-		this(stage, new GameSettings(60, 1440, 900, 32));
+		this(stage, new GameSettings(60, 1440, 900, 32, false));
 	}
 
 	public Engine(Stage stage, GameSettings settings)
 	{
+		this.loop = new Timeline(settings.fps);
+		loop.setCycleCount(Animation.INDEFINITE);
+		
 		this.stage = stage;
 		this.settings = settings;
 
@@ -56,11 +69,48 @@ public class Engine implements EventHandler<ActionEvent>
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
 
-		this.canvas = new Canvas(settings.width, settings.height);
-		this.renderer = canvas.getGraphicsContext2D();
-		this.root.getChildren().add(canvas);
+		final String path = GenericSprite.class.getResource("/dimensions/client/game/assets/images/textures/" + "mud.png").toString();
+		final Image mudImage = new Image(path);
+		final Rectangle screen = new Rectangle(0, 0, settings.widthWindow, settings.heightWindow);
+		screen.setFill(new ImagePattern(mudImage, 0, 0, 32, 32, false));
+
+		root.getChildren().add(screen);
+
+		this.mainCanvas = new Canvas(settings.widthWindow, settings.heightWindow);
+		this.playerCanvas = new Canvas(settings.widthWindow, settings.heightWindow);
+		this.hudCanvas = new Canvas(settings.widthWindow, settings.heightWindow);
+
+		this.mainRenderer = mainCanvas.getGraphicsContext2D();
+		this.playerRenderer = mainCanvas.getGraphicsContext2D();
+		this.hudRenderer = mainCanvas.getGraphicsContext2D();
+
+		this.root.getChildren().add(mainCanvas);
+		this.root.getChildren().add(playerCanvas);
+		this.root.getChildren().add(hudCanvas);
 
 		inputs.listenTo(scene);
+	}
+	
+	public void play()
+	{
+		loop.play();
+	}
+	
+	protected void stop()
+	{
+		loop.stop();
+	}
+	
+	public void addKeyFrame(KeyFrame frame)
+	{
+		loop.getKeyFrames().add(frame);
+	}
+	
+	public void addKeyFrame(EventHandler<ActionEvent> eventLoop, double fps)
+	{
+		final Duration frameDuation = Duration.millis(1000 / fps);
+		final KeyFrame frame = new KeyFrame(frameDuation, eventLoop);
+		loop.getKeyFrames().add(frame);
 	}
 
 	public void addNPC(final NPC npc)
@@ -71,21 +121,21 @@ public class Engine implements EventHandler<ActionEvent>
 	@Override
 	public void handle(ActionEvent event)
 	{
-		pollQueues();
-		moveMoveables();
-		actNPC();
+		//pollQueues();
+		//moveMoveables();
+		//actNPC();
 		checkForCollisons();
 		removeSprites();
-		updateGraphics();
+		//updateGraphics();
 		if(player != null)
 		{
-			root.setTranslateX(player.getX());
-			root.setTranslateY(player.getY());
+			mainCanvas.setTranslateX(player.getX());
+			mainCanvas.setTranslateY(player.getY());
 		}
 
 	}
 
-	private void actNPC()
+	void actNPC()
 	{
 		for(NPC npc : npcs)
 			npc.act();
@@ -93,28 +143,31 @@ public class Engine implements EventHandler<ActionEvent>
 
 	public void updateGraphics()
 	{
-		renderer.clearRect(0, 0, settings.width, settings.height);
+		mainRenderer.clearRect(0, 0, settings.widthWindow, settings.heightWindow);
 		for(Sprite sprite : sprites)
-			sprite.render(renderer);
+			sprite.render(mainRenderer);
+
+		player.render(playerRenderer);
 	}
 
 	private void removeSprites()
 	{
 		Iterator<Sprite> iterStatics = sprites.iterator();
-		while(iterStatics.hasNext())
-			if(iterStatics.next().isReadyToRemove())
-				synchronized(iterStatics)
-				{
+		synchronized(iterStatics)
+		{
+			while(iterStatics.hasNext())
+				if(iterStatics.next().isReadyToRemove())
 					iterStatics.remove();
-				}
+		}
 
 		Iterator<NPC> iterNpc = npcs.iterator();
-		while(iterNpc.hasNext())
-			if(iterNpc.next().isReadyToRemove())
-				synchronized(iterNpc)
-				{
+		synchronized(iterNpc)
+		{
+			while(iterNpc.hasNext())
+				if(iterNpc.next().isReadyToRemove())
+
 					iterNpc.remove();
-				}
+		}
 	}
 
 	private void checkForCollisons()
@@ -123,13 +176,14 @@ public class Engine implements EventHandler<ActionEvent>
 
 	}
 
-	private void moveMoveables()
+	void moveMoveables()
 	{
 		for(Moveable sprite : moveables)
 			sprite.move();
+		player.move();
 	}
 
-	private synchronized void pollQueues()
+	synchronized void pollQueues()
 	{
 		NPC npc = npcQueue.poll();
 		if(npc != null)
@@ -170,8 +224,16 @@ public class Engine implements EventHandler<ActionEvent>
 		if(this.player == null)
 		{
 			this.player = player;
-			addMoveable(player);
+			//addMoveable(player);
 			inputs.createDefaultKeyBindings(player);
+			centerPlayerOnScreen();
 		}
+	}
+	
+	private void centerPlayerOnScreen()
+	{
+		final double x = settings.widthPlayableArea/2 - player.getWidth()/2;
+		final double y = settings.heightPlayableArea/2 - player.getHeight()/2;
+		player.setXY(x, y);
 	}
 }

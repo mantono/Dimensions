@@ -1,13 +1,14 @@
 package dimensions.client.engine.spriteinterfaces;
 
-import javafx.event.EventHandler;
-import javafx.scene.input.KeyEvent;
-
-public interface Player extends Collidable, Destroyable, Moveable, EventHandler<KeyEvent>
+public interface Player extends Collidable, Destroyable, Moveable
 {
-	void moveRight();
-	void moveLeft();
-	void moveUp();
-	void moveDown();
+	void rightPressed();
+	void rightReleased();
+	void leftPressed();
+	void leftReleased();
+	void upPressed();
+	void upReleased();
+	void downPressed();
+	void downReleased();
 	void stop();
 }

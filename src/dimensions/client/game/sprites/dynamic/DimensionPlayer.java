@@ -2,6 +2,7 @@ package dimensions.client.game.sprites.dynamic;
 
 import java.util.EnumSet;
 
+import dimensions.client.engine.GameSettings;
 import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
@@ -14,17 +15,16 @@ import javafx.scene.input.KeyEvent;
 
 public class DimensionPlayer extends GenericSprite implements Player
 {
-	private final static byte DOWN = 1;
-	private final static byte RIGHT = 2;
-	private final static byte LEFT = 3;
-	private final static byte UP = 4;
-	private byte direction = 0;
-	private byte previousDirection = 0;
-	private float speed = 0;
+	private float velocityX, velocityY;
+	private boolean leftPressed, rightPressed, upPressed, downPressed;
+	private final float maxVelocity = 1.7f;
+	private final float acceleration = maxVelocity/30;
 
 	public DimensionPlayer()
 	{
 		super("player.png");
+		velocityX = velocityY = 0;
+		leftPressed = rightPressed = upPressed = downPressed = false;
 //		setOnKeyPressed(new KeyPressedHandler());
 //		setOnKeyReleased(new KeyReleasedHandler());
 	}
@@ -32,29 +32,35 @@ public class DimensionPlayer extends GenericSprite implements Player
 	@Override
 	public void move()
 	{
-		if(direction == 0)
-		{
-			speed /= 1.3;
-			previousDirection = direction;
-		}
-		
-		if(direction != previousDirection)
-			speed = 0.05f;
+		if(leftPressed)
+			velocityX -= acceleration;
+		else if(rightPressed)
+			velocityX += acceleration;
 		else
-			speed += 0.05; 
-		previousDirection = direction;
+			velocityX = normalize(velocityX);
 		
-		if(direction == DOWN)
-			setY(getY()+1*speed);
-		else if(direction == UP)
-			setY(getY()-1*speed);
-		else if(direction == LEFT)
-			setX(getX()-1*speed);
-		else if(direction == RIGHT)
-			setX(getX()+1*speed);
+		if(downPressed)
+			velocityY += acceleration;
+		else if(upPressed)
+			velocityY -= acceleration;
+		else
+			velocityY = normalize(velocityY);
 		
-		if(speed > 1.1)
-			speed = 1.1f;
+		if(velocityX > maxVelocity)
+			velocityX = maxVelocity;
+		else if(velocityX < -maxVelocity)
+			velocityX = -maxVelocity;
+		if(velocityY > maxVelocity)
+			velocityY = maxVelocity;
+		else if(velocityY < -maxVelocity)
+			velocityY = -maxVelocity;
+		
+		move(velocityX, velocityY);		
+	}
+
+	private float normalize(float velocity)
+	{
+		return velocity*0.3f;
 	}
 
 	@Override
@@ -106,27 +112,32 @@ public class DimensionPlayer extends GenericSprite implements Player
 	}
 
 	@Override
-	public void moveRight()
+	public void rightPressed()
 	{
-		direction = RIGHT;
+		//direction = RIGHT;
+		rightPressed = true;
+		leftPressed = false;
 	}
 
 	@Override
-	public void moveLeft()
+	public void leftPressed()
 	{
-		direction = LEFT;		
+		leftPressed = true;
+		rightPressed = false;
 	}
 
 	@Override
-	public void moveUp()
+	public void upPressed()
 	{
-		direction = UP;
+		upPressed = true;
+		downPressed = false;
 	}
 
 	@Override
-	public void moveDown()
+	public void downPressed()
 	{
-		direction = DOWN;
+		downPressed = true;
+		upPressed = false;
 	}
 
 	@Override
@@ -139,25 +150,37 @@ public class DimensionPlayer extends GenericSprite implements Player
 	@Override
 	public void stop()
 	{
-		direction = 0;
+		velocityX = velocityY = 0;
 	}
 
 	@Override
-	public void handle(KeyEvent event)
+	public void rightReleased()
 	{
-		if(event.getCode().isArrowKey())
-			handleArrowKeyInput(event);
+		rightPressed = false;
 	}
 
-	private void handleArrowKeyInput(KeyEvent event)
+	@Override
+	public void leftReleased()
 	{
-		switch(event.getCode())
-		{
-			case LEFT: moveLeft(); break;
-			case RIGHT: moveRight(); break;
-			case DOWN: moveDown(); break;
-			case UP: moveUp(); break;
-			default: stop();
-		}
+		leftPressed = false;
 	}
+
+	@Override
+	public void upReleased()
+	{
+		upPressed = false;
+	}
+
+	@Override
+	public void downReleased()
+	{
+		downPressed = false;
+	}
+
+	@Override
+	public boolean hasFixedScreenPosition()
+	{
+		return true;
+	}
+
 }
