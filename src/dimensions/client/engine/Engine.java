@@ -28,6 +28,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class Engine implements EventHandler<ActionEvent>
@@ -51,7 +52,9 @@ public class Engine implements EventHandler<ActionEvent>
 	private final BlockingQueue<Moveable> moveableQueue = new PriorityBlockingQueue<Moveable>(40);
 	private final BlockingQueue<Sprite> spriteQueue = new PriorityBlockingQueue<Sprite>(60);
 
-	private final Map<KeyCode, Method> keyBindings = new HashMap<KeyCode, Method>();
+	private final Map<KeyBinding, Method> keyBindings = new HashMap<KeyBinding, Method>();
+	private final Set<KeyCode> boundKeys = new HashSet<KeyCode>();
+	private final Map<MouseEvent, Method> mouseBindings = new HashMap<MouseEvent, Method>();
 
 	public Engine(Stage stage)
 	{
@@ -182,16 +185,41 @@ public class Engine implements EventHandler<ActionEvent>
 			try
 			{
 				Class<? extends Player> c = player.getClass();
-				keyBindings.put(KeyCode.RIGHT, c.getMethod("moveRight"));
-				keyBindings.put(KeyCode.LEFT, c.getMethod("moveLeft"));
-				keyBindings.put(KeyCode.UP, c.getMethod("moveUp"));
-				keyBindings.put(KeyCode.DOWN, c.getMethod("moveDown"));
+				addKeyBinding(KeyCode.RIGHT, c.getMethod("moveRight"));
+				addKeyBinding(KeyCode.LEFT, c.getMethod("moveLeft"));
+				addKeyBinding(KeyCode.UP, c.getMethod("moveUp"));
+				addKeyBinding(KeyCode.DOWN, c.getMethod("moveDown"));
 			}
 			catch(NoSuchMethodException | SecurityException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	public void addKeyBinding(KeyEvent event, Method method)
+	{
+		keyBindings.put(new KeyBinding(event), method);
+		boundKeys.add(event.getCode());
+	}
+	
+	public void addKeyBinding(KeyCode code, Method method)
+	{
+		final KeyEvent event = new KeyEvent(scene, scene, KeyEvent.KEY_PRESSED, "", "", code, false, false, false, false);
+		addKeyBinding(event, method);
+	}
+	
+	public void addKeyBinding(KeyEvent event, Class<?> className, String methodName)
+	{
+		try
+		{
+			final Method method = className.getMethod("methodName");
+			addKeyBinding(event, method);
+		}
+		catch(NoSuchMethodException | SecurityException e)
+		{
+			e.printStackTrace();
 		}
 	}
 
@@ -201,9 +229,12 @@ public class Engine implements EventHandler<ActionEvent>
 		@Override
 		public void handle(KeyEvent event)
 		{
-			if(event.getEventType() != KeyEvent.KEY_PRESSED)
+			if(!boundKeys.contains(event.getCode()))
 				return;
-			final Method method = keyBindings.get(event.getCode());
+//			if(event.getEventType() != KeyEvent.KEY_PRESSED)
+//				return;
+			final KeyBinding binding = new KeyBinding(event);
+			final Method method = keyBindings.get(binding);
 			if(method == null)
 				return;
 			try
@@ -222,12 +253,10 @@ public class Engine implements EventHandler<ActionEvent>
 	class KeyReleasedHandler implements EventHandler<KeyEvent>
 	{
 
-		private final EnumSet<KeyCode> arrowKeys = EnumSet.of(KeyCode.LEFT, KeyCode.RIGHT, KeyCode.DOWN, KeyCode.UP);
-
 		@Override
 		public void handle(KeyEvent event)
 		{
-			if(arrowKeys.contains(event.getCode()) && event.getEventType() == KeyEvent.KEY_RELEASED)
+			if(event.getCode().isArrowKey() && event.getEventType() == KeyEvent.KEY_RELEASED)
 				player.stop();
 		}
 

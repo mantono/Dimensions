@@ -34,9 +34,8 @@ public class DimensionPlayer extends GenericSprite implements Player
 	{
 		if(direction == 0)
 		{
-			speed = 0;
+			speed /= 0.003;
 			previousDirection = direction;
-			return;
 		}
 		
 		if(direction != previousDirection)
@@ -53,6 +52,9 @@ public class DimensionPlayer extends GenericSprite implements Player
 			setX(getX()-1*speed);
 		else if(direction == RIGHT)
 			setX(getX()+1*speed);
+		
+		if(speed > 1.1)
+			speed = 1.1f;
 	}
 
 	@Override
