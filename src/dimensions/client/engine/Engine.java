@@ -1,13 +1,7 @@
 package dimensions.client.engine;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -17,18 +11,12 @@ import dimensions.client.engine.spriteinterfaces.Moveable;
 import dimensions.client.engine.spriteinterfaces.NPC;
 import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.engine.spriteinterfaces.Sprite;
-import dimensions.client.game.sprites.dynamic.DimensionPlayer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 public class Engine implements EventHandler<ActionEvent>
@@ -52,13 +40,11 @@ public class Engine implements EventHandler<ActionEvent>
 	private final BlockingQueue<Moveable> moveableQueue = new PriorityBlockingQueue<Moveable>(40);
 	private final BlockingQueue<Sprite> spriteQueue = new PriorityBlockingQueue<Sprite>(60);
 
-	private final Map<KeyBinding, Method> keyBindings = new HashMap<KeyBinding, Method>();
-	private final Set<KeyCode> boundKeys = new HashSet<KeyCode>();
-	private final Map<MouseEvent, Method> mouseBindings = new HashMap<MouseEvent, Method>();
+	private final InputEventManager inputs = new InputEventManager();
 
 	public Engine(Stage stage)
 	{
-		this(stage, new GameSettings(60, 800, 600, 32));
+		this(stage, new GameSettings(60, 1440, 900, 32));
 	}
 
 	public Engine(Stage stage, GameSettings settings)
@@ -74,9 +60,7 @@ public class Engine implements EventHandler<ActionEvent>
 		this.renderer = canvas.getGraphicsContext2D();
 		this.root.getChildren().add(canvas);
 
-		scene.setOnKeyPressed(new KeyPressedHandler());
-		scene.setOnKeyReleased(new KeyReleasedHandler());
-		// canvas.setOnKeyPressed(new KeyEventHandler());
+		inputs.listenTo(scene);
 	}
 
 	public void addNPC(final NPC npc)
@@ -119,12 +103,18 @@ public class Engine implements EventHandler<ActionEvent>
 		Iterator<Sprite> iterStatics = sprites.iterator();
 		while(iterStatics.hasNext())
 			if(iterStatics.next().isReadyToRemove())
-				iterStatics.remove();
+				synchronized(iterStatics)
+				{
+					iterStatics.remove();
+				}
 
 		Iterator<NPC> iterNpc = npcs.iterator();
 		while(iterNpc.hasNext())
 			if(iterNpc.next().isReadyToRemove())
-				iterNpc.remove();
+				synchronized(iterNpc)
+				{
+					iterNpc.remove();
+				}
 	}
 
 	private void checkForCollisons()
@@ -139,7 +129,7 @@ public class Engine implements EventHandler<ActionEvent>
 			sprite.move();
 	}
 
-	private void pollQueues()
+	private synchronized void pollQueues()
 	{
 		NPC npc = npcQueue.poll();
 		if(npc != null)
@@ -181,84 +171,7 @@ public class Engine implements EventHandler<ActionEvent>
 		{
 			this.player = player;
 			addMoveable(player);
-
-			try
-			{
-				Class<? extends Player> c = player.getClass();
-				addKeyBinding(KeyCode.RIGHT, c.getMethod("moveRight"));
-				addKeyBinding(KeyCode.LEFT, c.getMethod("moveLeft"));
-				addKeyBinding(KeyCode.UP, c.getMethod("moveUp"));
-				addKeyBinding(KeyCode.DOWN, c.getMethod("moveDown"));
-			}
-			catch(NoSuchMethodException | SecurityException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			inputs.createDefaultKeyBindings(player);
 		}
-	}
-	
-	public void addKeyBinding(KeyEvent event, Method method)
-	{
-		keyBindings.put(new KeyBinding(event), method);
-		boundKeys.add(event.getCode());
-	}
-	
-	public void addKeyBinding(KeyCode code, Method method)
-	{
-		final KeyEvent event = new KeyEvent(scene, scene, KeyEvent.KEY_PRESSED, "", "", code, false, false, false, false);
-		addKeyBinding(event, method);
-	}
-	
-	public void addKeyBinding(KeyEvent event, Class<?> className, String methodName)
-	{
-		try
-		{
-			final Method method = className.getMethod("methodName");
-			addKeyBinding(event, method);
-		}
-		catch(NoSuchMethodException | SecurityException e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	class KeyPressedHandler implements EventHandler<KeyEvent>
-	{
-
-		@Override
-		public void handle(KeyEvent event)
-		{
-			if(!boundKeys.contains(event.getCode()))
-				return;
-//			if(event.getEventType() != KeyEvent.KEY_PRESSED)
-//				return;
-			final KeyBinding binding = new KeyBinding(event);
-			final Method method = keyBindings.get(binding);
-			if(method == null)
-				return;
-			try
-			{
-				method.invoke(player);
-			}
-			catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-	}
-
-	class KeyReleasedHandler implements EventHandler<KeyEvent>
-	{
-
-		@Override
-		public void handle(KeyEvent event)
-		{
-			if(event.getCode().isArrowKey() && event.getEventType() == KeyEvent.KEY_RELEASED)
-				player.stop();
-		}
-
 	}
 }

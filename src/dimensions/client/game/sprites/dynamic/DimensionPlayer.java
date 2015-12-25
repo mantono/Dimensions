@@ -34,7 +34,7 @@ public class DimensionPlayer extends GenericSprite implements Player
 	{
 		if(direction == 0)
 		{
-			speed /= 0.003;
+			speed /= 1.3;
 			previousDirection = direction;
 		}
 		
@@ -82,24 +82,6 @@ public class DimensionPlayer extends GenericSprite implements Player
 	public boolean hasPixelCollision(PixelReader pixels)
 	{
 		return false;
-	}
-
-	class KeyPressedHandler implements EventHandler<KeyEvent>
-	{
-
-		@Override
-		public void handle(KeyEvent event)
-		{
-			switch(event.getCode())
-			{
-				case DOWN: direction = DOWN; break;
-				case UP: direction = UP; break;
-				case LEFT: direction = LEFT; break;
-				case RIGHT: direction = RIGHT;break;
-				default: return;
-			}				
-		}
-
 	}
 
 	@Override
@@ -158,5 +140,24 @@ public class DimensionPlayer extends GenericSprite implements Player
 	public void stop()
 	{
 		direction = 0;
+	}
+
+	@Override
+	public void handle(KeyEvent event)
+	{
+		if(event.getCode().isArrowKey())
+			handleArrowKeyInput(event);
+	}
+
+	private void handleArrowKeyInput(KeyEvent event)
+	{
+		switch(event.getCode())
+		{
+			case LEFT: moveLeft(); break;
+			case RIGHT: moveRight(); break;
+			case DOWN: moveDown(); break;
+			case UP: moveUp(); break;
+			default: stop();
+		}
 	}
 }

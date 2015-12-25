@@ -1,6 +1,7 @@
 package dimensions.client.game;
 
 import dimensions.client.engine.Engine;
+import dimensions.client.engine.InputEventManager;
 import dimensions.client.game.sprites.dynamic.DimensionPlayer;
 import dimensions.client.game.sprites.dynamic.TestClass;
 import dimensions.client.game.sprites.dynamic.npc.SimpleNPC;

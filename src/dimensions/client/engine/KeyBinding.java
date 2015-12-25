@@ -35,6 +35,16 @@ public class KeyBinding
 		this(eventType, code, false, false, false, false);
 	}
 	
+	public KeyBinding(EventType<KeyEvent> eventType, KeyCode code, int flags)
+	{
+		this.eventType = eventType;
+		this.code = code;
+		this.shiftDown = 0x1000 == (flags & 0x1000);
+		this.controlDown = 0x0100 == (flags & 0x0100);
+		this.altDown = 0x0010 == (flags & 0x0010);
+		this.metaDown = 0x001 == (flags & 0x0001);
+	}
+	
 	public KeyBinding(KeyCode code)
 	{
 		this(KeyEvent.KEY_PRESSED, code, false, false, false, false);
@@ -87,5 +97,10 @@ public class KeyBinding
 			hash <<= 8;
 		
 		return hash;
+	}
+
+	public KeyCode getCode()
+	{
+		return code;
 	}
 }
