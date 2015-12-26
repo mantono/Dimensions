@@ -1,5 +1,6 @@
 package dimensions.client.game.sprites.dynamic;
 
+import dimensions.client.engine.GameSettings;
 import dimensions.client.engine.Physics;
 import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.engine.spriteinterfaces.Sprite;
@@ -20,7 +21,8 @@ public class DimensionPlayer extends GenericSprite implements Player
 		super("player.png");
 		velocityX = velocityY = 0;
 		leftPressed = rightPressed = upPressed = downPressed = false;
-	}
+		centerOnScreen();
+	}	
 
 	@Override
 	public void render(GraphicsContext context)
@@ -54,6 +56,18 @@ public class DimensionPlayer extends GenericSprite implements Player
 	}
 
 	@Override
+	public void setX(double x)
+	{
+		setWorldX(x);
+	}
+
+	@Override
+	public void setY(double y)
+	{
+		setWorldY(y);
+	}
+
+	@Override
 	public double getLife()
 	{
 		// TODO Auto-generated method stub
@@ -77,27 +91,6 @@ public class DimensionPlayer extends GenericSprite implements Player
 	public boolean hasPixelCollision(PixelReader pixels)
 	{
 		return false;
-	}
-
-	@Override
-	public void setWorldX()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setWorldY()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setWorldZ()
-	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -193,6 +186,15 @@ public class DimensionPlayer extends GenericSprite implements Player
 	public void setVelocityY(double velocity)
 	{
 		this.velocityX = velocity;
+	}
+
+	@Override
+	public void centerOnScreen()
+	{
+		final double x = GameSettings.widthPlayableArea / 2 - getWidth() / 2;
+		final double y = GameSettings.heightPlayableArea / 2 - getHeight() / 2;
+		super.setX(x);
+		super.setY(y);
 	}
 
 	@Override

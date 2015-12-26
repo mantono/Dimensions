@@ -10,6 +10,9 @@ public interface Sprite extends Comparable<Sprite>
 	double getX();
 	double getY();
 	double getZ();
+	void setWorldX(double x);
+	void setWorldY(double y);
+	void setWorldZ(double z);
 	double getWidth();
 	double getHeight();
 	void setX(double x);

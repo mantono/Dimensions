@@ -145,6 +145,24 @@ public abstract class AbstractSprite implements Sprite
 	}
 
 	@Override
+	public void setWorldX(double x)
+	{
+		this.worldX = x;
+	}
+
+	@Override
+	public void setWorldY(double y)
+	{
+		this.worldY = y;
+	}
+
+	@Override
+	public void setWorldZ(double z)
+	{
+		this.worldZ = z;
+	}
+
+	@Override
 	public void move(double x, double y)
 	{
 		this.x += x;

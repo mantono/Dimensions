@@ -25,9 +25,10 @@ public class Window extends Application
 		launch(args);
 	}
 
-	public void start(Stage stage)
+	public void start(Stage stage) throws InterruptedException
 	{
 		stage.setTitle("Greate game");
+		stage.setOnCloseRequest(new Quit());
 		
 		engine = new Engine(60, 5);
 		SpriteManager spriteManager = new SpriteManager();
@@ -38,24 +39,17 @@ public class Window extends Application
 		Logic logic = new Logic(spriteManager);
 		Physics physics = new Physics(spriteManager);
 		
-		spriteManager.addSprite(new Mud());
-		spriteManager.addSprite(new SimpleNPC());
-		spriteManager.addSprite(new SimpleNPC());
-		spriteManager.addSprite(new SimpleNPC());
-		spriteManager.addSprite(new SimpleNPC());
-		spriteManager.addSprite(new SimpleNPC());
-		spriteManager.addSprite(new SimpleNPC());
-		spriteManager.addSprite(new SimpleNPC());
-		spriteManager.addPlayer(new DimensionPlayer());
-		
-		inputs.createDefaultKeyBindings(spriteManager.getPlayer());
-
-		engine.addTask(spriteManager, 10);
+		engine.addTask(spriteManager, 30);
 		engine.addTask(logic, 20);
-		//engine.addTask(renderer, 60);
 		engine.addTask(physics, 60);
 		
-		stage.setOnCloseRequest(new Quit());
+		spriteManager.addSprite(new Mud());
+		spriteManager.addPlayer(new DimensionPlayer());
+		
+		for(int i = 0; i < 500; i++)
+			spriteManager.addSprite(new SimpleNPC());
+		
+		inputs.createDefaultKeyBindings(spriteManager.getPlayer());
 
 		stage.show();
 	}
@@ -66,6 +60,7 @@ public class Window extends Application
 		public void handle(WindowEvent event)
 		{
 			engine.stop();
+			System.out.println("Gracefully closed.");
 			System.exit(0);
 		}	
 	}

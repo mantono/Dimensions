@@ -1,5 +1,6 @@
 package dimensions.client.engine;
 
+import java.security.SecureRandom;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -12,6 +13,7 @@ public class NPCSpawnCluster
 	private final int spawnRadius, instances, reviveTime;
 	private final BlockingQueue<NPC> queue;
 	private long lastSpawned = System.currentTimeMillis();
+	private final SecureRandom random = new SecureRandom();
 	
 	public NPCSpawnCluster(Class<NPC> npcClass, final int x, final int y, final int z, final int radius, final int reviveTime, final int instances) throws InstantiationException, IllegalAccessException
 	{
@@ -31,6 +33,9 @@ public class NPCSpawnCluster
 	private void createNPC() throws InstantiationException, IllegalAccessException
 	{
 		final NPC npc = npcClass.newInstance();
+		npc.setWorldX(centerX + random.nextInt(spawnRadius) - spawnRadius/2);
+		npc.setWorldY(centerY + random.nextInt(spawnRadius) - spawnRadius/2);
+		npc.setWorldZ(centerZ);
 		queue.offer(npc);
 	}
 	

@@ -20,8 +20,8 @@ public class SimpleNPC extends GenericSprite implements NPC
 
 	public SimpleNPC()
 	{
-		setX(400 + rand.nextInt(400) - 200);
-		setY(300 + rand.nextInt(300) - 150);
+		setX(500 + rand.nextInt(600) - 300);
+		setY(350 + rand.nextInt(400) - 200);
 	}
 
 	@Override
@@ -81,27 +81,6 @@ public class SimpleNPC extends GenericSprite implements NPC
 			nextY = 5;
 		else if(getY() > 600)
 			nextY = 5;
-	}
-
-	@Override
-	public void setWorldX()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setWorldZ()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setWorldY()
-	{
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

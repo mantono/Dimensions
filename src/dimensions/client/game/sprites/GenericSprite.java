@@ -19,9 +19,7 @@ public class GenericSprite extends AbstractSprite
 	@Override
 	public boolean isReadyToRemove()
 	{
-		if(300 < distanceFromScreen())
-			System.out.println(this + " was removed");
-		return 300 < distanceFromScreen();
+		return 1000 < distanceFromScreen();
 	}
 
 }

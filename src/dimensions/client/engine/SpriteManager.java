@@ -1,12 +1,13 @@
 package dimensions.client.engine;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Spliterator;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.PriorityBlockingQueue;
-
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.Moveable;
 import dimensions.client.engine.spriteinterfaces.NPC;
@@ -17,12 +18,12 @@ public class SpriteManager implements Runnable
 {
 	private Player player;
 
-	private final Set<Sprite> sprites = new HashSet<Sprite>();
-	private final Set<NPC> npcs = new HashSet<NPC>();
-	private final Set<Moveable> moveables = new HashSet<Moveable>();
-	private final Set<Collidable> collidables = new HashSet<Collidable>();
+	private final Set<Sprite> sprites = Collections.newSetFromMap(new ConcurrentHashMap<Sprite, Boolean>());
+	private final Set<NPC> npcs = Collections.newSetFromMap(new ConcurrentHashMap<NPC, Boolean>());
+	private final Set<Moveable> moveables = Collections.newSetFromMap(new ConcurrentHashMap<Moveable, Boolean>());
+	private final Set<Collidable> collidables = Collections.newSetFromMap(new ConcurrentHashMap<Collidable, Boolean>());
 
-	private final BlockingQueue<Sprite> spriteQueue = new PriorityBlockingQueue<Sprite>(60);
+	private final BlockingQueue<Sprite> spriteQueue = new ArrayBlockingQueue<Sprite>(1000);
 
 	@Override
 	public void run()
@@ -33,11 +34,14 @@ public class SpriteManager implements Runnable
 
 	private void pollQueues()
 	{
+		if(spriteQueue.remainingCapacity() == 0)
+			System.out.println("Warning: Queue has reached the maximum capacity.");
 		final Sprite sprite = spriteQueue.poll();
 		if(sprite == null)
 			return;
 
 		sprites.add(sprite);
+		System.out.println(sprite + " added.");
 
 		if(sprite instanceof Moveable)
 			moveables.add((Moveable) sprite);
@@ -74,9 +78,9 @@ public class SpriteManager implements Runnable
 		return player;
 	}
 
-	public void addSprite(Sprite sprite)
+	public void addSprite(Sprite sprite) throws InterruptedException
 	{
-		spriteQueue.offer(sprite);
+		spriteQueue.offer(sprite, 10l, TimeUnit.MILLISECONDS);
 	}
 
 	public void addPlayer(Player player)
@@ -100,6 +104,7 @@ public class SpriteManager implements Runnable
 				moveables.remove(sprite);
 				collidables.remove(sprite);
 				iterator.remove();
+				System.out.println(sprite + " removed (" + sprites.size() + ")");
 			}
 		}
 	}

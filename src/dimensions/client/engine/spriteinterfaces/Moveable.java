@@ -5,9 +5,6 @@ import dimensions.client.engine.Physics;
 public interface Moveable extends Sprite
 {
 	void updateVelocity(Physics physics);
-	void setWorldX();
-	void setWorldY();
-	void setWorldZ();
 	double getVelocityX();
 	double getVelocityY();
 	void setVelocityX(double velocity);
