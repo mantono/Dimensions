@@ -27,8 +27,8 @@ public abstract class AbstractSprite implements Sprite
 	@Override
 	public void centerOnScreen()
 	{
-		final double x = GameSettings.widthPlayableArea/2 - getWidth()/2;
-		final double y = GameSettings.heightPlayableArea/2 - getHeight()/2;
+		final double x = GameSettings.widthPlayableArea / 2 - getWidth() / 2;
+		final double y = GameSettings.heightPlayableArea / 2 - getHeight() / 2;
 		setXY(x, y);
 	}
 

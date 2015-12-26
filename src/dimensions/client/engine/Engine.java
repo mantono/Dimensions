@@ -1,46 +1,42 @@
 package dimensions.client.engine;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.util.Duration;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class Engine
-{	
-	private final Timeline loop;
+{
+	private final ScheduledThreadPoolExecutor tasks;
+	private final double fps;
 
 	public Engine()
 	{
-		this(60);
+		this(60, 5);
 	}
 
-	public Engine(final double fps)
+	public Engine(final double fps, final int threadPoolSize)
 	{
-		this.loop = new Timeline(fps);
-		loop.setCycleCount(Animation.INDEFINITE);
+		tasks = new ScheduledThreadPoolExecutor(threadPoolSize);
+		this.fps = fps;
 	}
-	
-	public void play()
+
+	public void execut(Runnable command)
 	{
-		loop.play();
+		tasks.execute(command);
 	}
-	
-	protected void stop()
+
+	public void stop()
 	{
-		loop.stop();
+		tasks.shutdown();
 	}
-	
-	public void addKeyFrame(KeyFrame frame)
+
+	public void addTask(Runnable task)
 	{
-		loop.getKeyFrames().add(frame);
+		addTask(task, fps);
 	}
-	
-	public void addKeyFrame(EventHandler<ActionEvent> eventLoop, double fps)
+
+	public void addTask(Runnable task, double fps)
 	{
-		final Duration frameDuation = Duration.millis(1000 / fps);
-		final KeyFrame frame = new KeyFrame(frameDuation, eventLoop);
-		loop.getKeyFrames().add(frame);
-	}	
+		final long interval = (long) (Physics.ONE_SECOND / fps);
+		tasks.scheduleAtFixedRate(task, 0, interval, TimeUnit.NANOSECONDS);
+	}
 }

@@ -2,6 +2,7 @@ package dimensions.client.game.sprites.dynamic.npc;
 
 import java.security.SecureRandom;
 
+import dimensions.client.engine.Physics;
 import dimensions.client.engine.spriteinterfaces.NPC;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
@@ -13,11 +14,14 @@ public class SimpleNPC extends GenericSprite implements NPC
 	private final SecureRandom rand = new SecureRandom();
 	private double nextX = 1;
 	private double nextY = 1;
-	
+	private double velocityY = 0;
+	private double velocityX = 0;
+	private long lastMoved = System.nanoTime();
+
 	public SimpleNPC()
 	{
-		setX(200);
-		setY(200);
+		setX(400 + rand.nextInt(400) - 200);
+		setY(300 + rand.nextInt(300) - 150);
 	}
 
 	@Override
@@ -42,10 +46,18 @@ public class SimpleNPC extends GenericSprite implements NPC
 	}
 
 	@Override
-	public void move()
+	public void updateVelocity(Physics physics)
 	{
-		setX(nextX);
-		setY(nextY);
+		velocityX = rand.nextDouble()*3 -1.5;
+		velocityY = rand.nextDouble()*3 -1.5;
+	}
+	
+	@Override
+	public synchronized long updateLastMoved(long nanoSeconds)
+	{
+		final long diff = nanoSeconds - lastMoved;
+		lastMoved = nanoSeconds;
+		return diff;
 	}
 
 	@Override
@@ -57,14 +69,14 @@ public class SimpleNPC extends GenericSprite implements NPC
 	@Override
 	public void act()
 	{
-		nextX += rand.nextInt(1)-0.5;
-		nextY += nextX/10;
+		nextX += rand.nextInt(1) - 0.5;
+		nextY += nextX / 10;
 
 		if(getX() < 0)
 			nextX = 5;
 		else if(getX() > 600)
 			nextX = 5;
-		
+
 		if(getY() < 0)
 			nextY = 5;
 		else if(getY() > 600)
@@ -72,32 +84,24 @@ public class SimpleNPC extends GenericSprite implements NPC
 	}
 
 	@Override
-	public void move(double x, double y)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void setWorldX()
 	{
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 	@Override
 	public void setWorldZ()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setWorldY()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -113,5 +117,27 @@ public class SimpleNPC extends GenericSprite implements NPC
 		return 0;
 	}
 
+	@Override
+	public double getVelocityX()
+	{
+		return velocityX;
+	}
 
+	@Override
+	public double getVelocityY()
+	{
+		return velocityY;
+	}
+
+	@Override
+	public void setVelocityX(double velocity)
+	{
+		this.velocityX = velocity;
+	}
+
+	@Override
+	public void setVelocityY(double velocity)
+	{
+		this.velocityX = velocity;
+	}
 }

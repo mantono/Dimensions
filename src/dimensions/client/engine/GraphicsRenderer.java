@@ -1,8 +1,7 @@
 package dimensions.client.engine;
 
 import dimensions.client.game.sprites.GenericSprite;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -12,21 +11,21 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
-public class GraphicsRenderer implements EventHandler<ActionEvent>
+public class GraphicsRenderer extends AnimationTimer
 {
 	private final Stage stage;
 	private final Scene scene;
 	private final Group root;
 	private final Canvas mainCanvas, playerCanvas, hudCanvas;
 	private final GraphicsContext mainRenderer, playerRenderer, hudRenderer;
-	
+
 	private final SpriteManager spriteManager;
-	
+
 	public GraphicsRenderer(Stage stage, SpriteManager spriteManager)
 	{
 		this.stage = stage;
 		this.spriteManager = spriteManager;
-		
+
 		this.root = new Group();
 		this.scene = new Scene(root);
 		this.stage.setScene(scene);
@@ -50,7 +49,7 @@ public class GraphicsRenderer implements EventHandler<ActionEvent>
 		this.root.getChildren().add(playerCanvas);
 		this.root.getChildren().add(hudCanvas);
 	}
-	
+
 	private void renderGraphics()
 	{
 		mainRenderer.clearRect(0, 0, GameSettings.widthWindow, GameSettings.heightWindow);
@@ -58,12 +57,11 @@ public class GraphicsRenderer implements EventHandler<ActionEvent>
 
 		spriteManager.getPlayer().render(playerRenderer);
 	}
-	
+
 	@Override
-	public void handle(ActionEvent event)
+	public void handle(long now)
 	{
 		renderGraphics();
 	}
 
 }
-

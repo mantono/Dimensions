@@ -12,10 +12,8 @@ import dimensions.client.engine.spriteinterfaces.Moveable;
 import dimensions.client.engine.spriteinterfaces.NPC;
 import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.engine.spriteinterfaces.Sprite;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 
-public class SpriteManager implements EventHandler<ActionEvent>
+public class SpriteManager implements Runnable
 {
 	private Player player;
 
@@ -27,7 +25,7 @@ public class SpriteManager implements EventHandler<ActionEvent>
 	private final BlockingQueue<Sprite> spriteQueue = new PriorityBlockingQueue<Sprite>(60);
 
 	@Override
-	public void handle(ActionEvent event)
+	public void run()
 	{
 		pollQueues();
 		removeSprites();
@@ -50,27 +48,27 @@ public class SpriteManager implements EventHandler<ActionEvent>
 		if(sprite instanceof Player && player == null)
 			player = (Player) sprite;
 	}
-	
+
 	public Spliterator<Sprite> getSprites()
 	{
 		return sprites.spliterator();
 	}
-	
+
 	public Spliterator<NPC> getNpcs()
 	{
 		return npcs.spliterator();
 	}
-	
+
 	public Spliterator<Collidable> getCollidables()
 	{
 		return collidables.spliterator();
-	} 
-	
+	}
+
 	public Spliterator<Moveable> getMoveables()
 	{
 		return moveables.spliterator();
 	}
-	
+
 	public Player getPlayer()
 	{
 		return player;

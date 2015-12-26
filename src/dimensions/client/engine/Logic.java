@@ -1,10 +1,8 @@
-package dimensions.client.engine.spriteinterfaces;
+package dimensions.client.engine;
 
 import dimensions.client.engine.SpriteManager;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 
-public class Logic implements EventHandler<ActionEvent>
+public class Logic implements Runnable
 {
 	private final SpriteManager spriteManager;
 	
@@ -14,7 +12,7 @@ public class Logic implements EventHandler<ActionEvent>
 	}
 
 	@Override
-	public void handle(ActionEvent event)
+	public void run()
 	{
 		spriteManager.getNpcs().forEachRemaining(n -> n.act());
 	}	
