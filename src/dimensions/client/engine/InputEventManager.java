@@ -6,13 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 import dimensions.client.engine.spriteinterfaces.Player;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventTarget;
 import javafx.event.EventType;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -25,6 +21,11 @@ public class InputEventManager
 	
 	private final KeyInputHandler keyHandler = new KeyInputHandler();
 	private final MouseInputHandler mouseHandler = new MouseInputHandler();
+	
+	public InputEventManager(Scene scene)
+	{
+		listenTo(scene);
+	}
 	
 	public void listenTo(Scene scene)
 	{

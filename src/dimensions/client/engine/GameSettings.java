@@ -1,17 +1,18 @@
 package dimensions.client.engine;
 
 public class GameSettings
-{
-	public final int fps, widthWindow, heightWindow, widthPlayableArea, heightPlayableArea;
-	public final short spriteBlockSize;
-	public final boolean debugMode;
+{	
+	public static double fps; 
+	public static int widthWindow, heightWindow, widthPlayableArea, heightPlayableArea;
+	public static short spriteBlockSize;
+	public static boolean debugMode;
 	
-	public GameSettings(int fps, int width, int height, int blockSize, boolean debugMode)
+	public static void initate(double fps, int width, int height, int blockSize, boolean debugMode)
 	{
-		this.fps = fps;
-		this.widthPlayableArea = this.widthWindow = width;
-		this.heightPlayableArea = this.heightWindow = height;
-		this.spriteBlockSize = (short) blockSize;
-		this.debugMode = debugMode;
+		GameSettings.fps = fps;
+		GameSettings.widthPlayableArea = GameSettings.widthWindow = width;
+		GameSettings.heightPlayableArea = GameSettings.heightWindow = height;
+		GameSettings.spriteBlockSize = (short) blockSize;
+		GameSettings.debugMode = debugMode;
 	}
 }

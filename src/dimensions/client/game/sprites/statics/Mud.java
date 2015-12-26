@@ -2,7 +2,6 @@ package dimensions.client.game.sprites.statics;
 
 import dimensions.client.engine.AbstractSprite;
 import dimensions.client.engine.spriteinterfaces.Sprite;
-import javafx.scene.canvas.GraphicsContext;
 
 public class Mud extends AbstractSprite
 {

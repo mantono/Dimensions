@@ -1,17 +1,10 @@
 package dimensions.client.game.sprites.dynamic;
 
-import java.util.EnumSet;
-
-import dimensions.client.engine.GameSettings;
 import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
-import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.PixelReader;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
 public class DimensionPlayer extends GenericSprite implements Player
 {

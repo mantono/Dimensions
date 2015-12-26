@@ -1,7 +1,12 @@
 package dimensions.client.game;
 
 import dimensions.client.engine.Engine;
+import dimensions.client.engine.GameSettings;
 import dimensions.client.engine.GraphicsRenderer;
+import dimensions.client.engine.InputEventManager;
+import dimensions.client.engine.Physics;
+import dimensions.client.engine.SpriteManager;
+import dimensions.client.engine.spriteinterfaces.Logic;
 import dimensions.client.game.sprites.dynamic.DimensionPlayer;
 import dimensions.client.game.sprites.dynamic.TestClass;
 import dimensions.client.game.sprites.dynamic.npc.SimpleNPC;
@@ -18,15 +23,27 @@ public class Window extends Application
 
 	public void start(Stage stage)
 	{
-		Engine engine = new Engine(stage);
-		engine.addSprite(new Mud());
-		engine.addMoveable(new TestClass());
-		engine.addPlayer(new DimensionPlayer());
-		engine.addNPC(new SimpleNPC());
-		// stage.setTitle(title);
+		stage.setTitle("Greate game");
+		
+		Engine engine = new Engine(60);
+		SpriteManager spriteManager = new SpriteManager();
+		GameSettings.initate(60, 1440, 900, 32, false);
+		GraphicsRenderer renderer = new GraphicsRenderer(stage, spriteManager);
+		InputEventManager inputs = new InputEventManager(stage.getScene());
+		Logic logic = new Logic(spriteManager);
+		Physics physics = new Physics(spriteManager);
+		
+		spriteManager.addSprite(new Mud());
+		spriteManager.addSprite(new TestClass());
+		spriteManager.addSprite(new SimpleNPC());
+		spriteManager.addPlayer(new DimensionPlayer());
+		
+		inputs.createDefaultKeyBindings(spriteManager.getPlayer());
 
-		engine.addKeyFrame(engine, 30);
-		engine.addKeyFrame(new GraphicsRenderer(engine), 60);
+		engine.addKeyFrame(spriteManager, 60);
+		engine.addKeyFrame(renderer, 60);
+		engine.addKeyFrame(physics, 60);
+		engine.addKeyFrame(logic, 60);
 		
 		engine.play();
 

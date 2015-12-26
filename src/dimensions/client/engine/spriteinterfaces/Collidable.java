@@ -8,4 +8,5 @@ public interface Collidable extends Moveable
 	Rectangle2D[] getHitBoxes();
 	boolean intersects(Rectangle2D[] bounds);
 	boolean hasPixelCollision(PixelReader pixels);
+	default void onCollision(Collidable other){}
 }

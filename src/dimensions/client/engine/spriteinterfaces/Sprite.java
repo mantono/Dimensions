@@ -1,6 +1,5 @@
 package dimensions.client.engine.spriteinterfaces;
 
-import dimensions.client.engine.GameSettings;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -17,8 +16,9 @@ public interface Sprite extends Comparable<Sprite>
 	void setY(double y);
 	void setZ(double z);
 	void move(double x, double y);
-	boolean isOutsideScreen(GameSettings settings);
-	double distanceFromScreen(GameSettings setting);
+	boolean isOutsideScreen();
+	double distanceFromScreen();
+	void centerOnScreen();
 	boolean isReadyToRemove();
 	long timeCreated();
 	

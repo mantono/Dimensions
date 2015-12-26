@@ -6,7 +6,6 @@ import dimensions.client.engine.spriteinterfaces.NPC;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelReader;
 
 public class SimpleNPC extends GenericSprite implements NPC

@@ -1,7 +1,6 @@
 package dimensions.client.game.sprites;
 
 import dimensions.client.engine.AbstractSprite;
-import dimensions.client.engine.GameSettings;
 
 public class GenericSprite extends AbstractSprite
 {
@@ -20,8 +19,7 @@ public class GenericSprite extends AbstractSprite
 	@Override
 	public boolean isReadyToRemove()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return 300 < distanceFromScreen();
 	}
 
 }
