@@ -43,11 +43,4 @@ public class Engine
 		final KeyFrame frame = new KeyFrame(frameDuation, eventLoop);
 		loop.getKeyFrames().add(frame);
 	}	
-	
-//	private void centerPlayerOnScreen()
-//	{
-//		final double x = settings.widthPlayableArea/2 - player.getWidth()/2;
-//		final double y = settings.heightPlayableArea/2 - player.getHeight()/2;
-//		player.setXY(x, y);
-//	}
 }

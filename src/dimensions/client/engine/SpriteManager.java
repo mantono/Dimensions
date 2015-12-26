@@ -24,15 +24,6 @@ public class SpriteManager implements EventHandler<ActionEvent>
 	private final Set<Moveable> moveables = new HashSet<Moveable>();
 	private final Set<Collidable> collidables = new HashSet<Collidable>();
 
-	// private final Set<Class<? super Sprite>> spriteInterfaces = new
-	// HashSet<Class<? super Sprite>>();
-	// private final Map<Class<? super Sprite>, Set<? super Sprite>> spriteSets
-	// = new HashMap<Class<? super Sprite>, Set<? super Sprite>>();
-
-	// private final BlockingQueue<NPC> npcQueue = new
-	// PriorityBlockingQueue<NPC>(50);
-	// private final BlockingQueue<Moveable> moveableQueue = new
-	// PriorityBlockingQueue<Moveable>(40);
 	private final BlockingQueue<Sprite> spriteQueue = new PriorityBlockingQueue<Sprite>(60);
 
 	@Override
@@ -41,11 +32,6 @@ public class SpriteManager implements EventHandler<ActionEvent>
 		pollQueues();
 		removeSprites();
 	}
-
-	// public void addNPC(final NPC npc)
-	// {
-	// npcQueue.offer(npc);
-	// }
 
 	private void pollQueues()
 	{
@@ -63,28 +49,6 @@ public class SpriteManager implements EventHandler<ActionEvent>
 			collidables.add((Collidable) sprite);
 		if(sprite instanceof Player && player == null)
 			player = (Player) sprite;
-		// NPC npc = npcQueue.poll();
-		// if(npc != null)
-		// {
-		// npcs.add(npc);
-		// collidables.add(npc);
-		// moveables.add(npc);
-		// sprites.add(npc);
-		// }
-		//
-		// Moveable moveable = moveableQueue.poll();
-		// if(moveable != null)
-		// {
-		// moveables.add(moveable);
-		// sprites.add(moveable);
-		// }
-		//
-		// Sprite sprite = spriteQueue.poll();
-		// if(sprite != null)
-		// {
-		// sprites.add(sprite);
-		// }
-
 	}
 	
 	public Spliterator<Sprite> getSprites()
@@ -117,20 +81,12 @@ public class SpriteManager implements EventHandler<ActionEvent>
 		spriteQueue.offer(sprite);
 	}
 
-	// public void addMoveable(Moveable moveable)
-	// {
-	// moveableQueue.offer(moveable);
-	// }
-
 	public void addPlayer(Player player)
 	{
 		if(this.player == null)
 		{
 			this.player = player;
 			spriteQueue.offer(player);
-			
-//			inputs.createDefaultKeyBindings(player);
-//			centerPlayerOnScreen();
 		}
 	}
 
