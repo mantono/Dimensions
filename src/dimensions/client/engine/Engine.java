@@ -3,6 +3,8 @@ package dimensions.client.engine;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import dimensions.client.engine.physics.Physics;
+
 public class Engine
 {
 	private final ScheduledThreadPoolExecutor tasks;

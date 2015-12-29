@@ -1,8 +1,9 @@
-package dimensions.client.engine;
+package dimensions.client.engine.physics;
 
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import dimensions.client.engine.SpriteManager;
 import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.Moveable;
 
@@ -136,25 +137,19 @@ public class Physics implements Runnable
 		public void accept(Moveable m)
 		{
 			m.updateVelocity(Physics.this);
-			double velocityX = m.getVelocityX();
-			double velocityY = m.getVelocityY();
-
-			if(velocityX > getMaxVelocityX())
-				velocityX = getMaxVelocityX();
-			else if(velocityX < -getMaxVelocityX())
-				velocityX = -getMaxVelocityX();
-
-			if(velocityY > getMaxVelocityY())
-				velocityY = getMaxVelocityY();
-			else if(velocityY < -getMaxVelocityY())
-				velocityY = -getMaxVelocityY();
-
 			final long diff = m.updateLastMoved(System.nanoTime());
 			final double interpolation = calculateInterpolation(diff);
-			velocityX *= interpolation;
-			velocityY *= interpolation;
-			m.setX(m.getX() + velocityX);
-			m.setY(m.getY() + velocityY);
+
+			final Velocity velocity = m.getVelocity();
+			velocity.applyPhysics(Physics.this);
+			velocity.interpolate(interpolation);
+			final Coordinate3D worldPosition = m.getWorldCoordinates();
+			worldPosition.move(velocity);
+			if(!m.hasFixedScreenPosition())
+			{
+				final Coordinate2D screenPosition = m.getScreenCoordinates();
+				screenPosition.move(velocity);
+			}
 		}
 
 	}

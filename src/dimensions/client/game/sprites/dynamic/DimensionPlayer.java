@@ -1,7 +1,8 @@
 package dimensions.client.game.sprites.dynamic;
 
 import dimensions.client.engine.GameSettings;
-import dimensions.client.engine.Physics;
+import dimensions.client.engine.physics.Physics;
+import dimensions.client.engine.physics.Velocity;
 import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
@@ -11,7 +12,8 @@ import javafx.scene.image.PixelReader;
 
 public class DimensionPlayer extends GenericSprite implements Player
 {
-	private double velocityX, velocityY;
+	//private double velocityX, velocityY;
+	private final Velocity velocity = new Velocity();
 	private boolean leftPressed, rightPressed, upPressed, downPressed;
 	private final float acceleration = 0.1f;
 	private long lastMoved = System.nanoTime();
@@ -19,7 +21,6 @@ public class DimensionPlayer extends GenericSprite implements Player
 	public DimensionPlayer()
 	{
 		super("player.png");
-		velocityX = velocityY = 0;
 		leftPressed = rightPressed = upPressed = downPressed = false;
 		centerOnScreen();
 	}	
@@ -35,37 +36,21 @@ public class DimensionPlayer extends GenericSprite implements Player
 	{
 
 		if(leftPressed)
-			velocityX -= acceleration;
+			velocity.accelerateX(-acceleration);
 		else if(rightPressed)
-			velocityX += acceleration;
+			velocity.accelerateX(acceleration);
 		else
-			velocityX = normalize(velocityX);
+			velocity.reduceX(0.8);
 
 		if(downPressed)
-			velocityY += acceleration;
+			velocity.accelerateY(-acceleration);
 		else if(upPressed)
-			velocityY -= acceleration;
+			velocity.accelerateY(acceleration);
 		else
-			velocityY = normalize(velocityY);
+			velocity.reduceY(0.8);
 
 	}
 
-	private double normalize(double velocity)
-	{
-		return velocity * 0.8;
-	}
-
-	@Override
-	public void setX(double x)
-	{
-		setWorldX(x);
-	}
-
-	@Override
-	public void setY(double y)
-	{
-		setWorldY(y);
-	}
 
 	@Override
 	public double getLife()
@@ -122,16 +107,9 @@ public class DimensionPlayer extends GenericSprite implements Player
 	}
 
 	@Override
-	public int compareTo(Sprite o)
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public void stop()
 	{
-		velocityX = velocityY = 0;
+		velocity.reduce(0);
 	}
 
 	@Override
@@ -165,36 +143,12 @@ public class DimensionPlayer extends GenericSprite implements Player
 	}
 
 	@Override
-	public double getVelocityX()
-	{
-		return velocityX;
-	}
-
-	@Override
-	public double getVelocityY()
-	{
-		return velocityY;
-	}
-
-	@Override
-	public void setVelocityX(double velocity)
-	{
-		this.velocityX = velocity;
-	}
-
-	@Override
-	public void setVelocityY(double velocity)
-	{
-		this.velocityX = velocity;
-	}
-
-	@Override
 	public void centerOnScreen()
 	{
 		final double x = GameSettings.widthPlayableArea / 2 - getWidth() / 2;
 		final double y = GameSettings.heightPlayableArea / 2 - getHeight() / 2;
-		super.setX(x);
-		super.setY(y);
+		getScreenCoordinates().setX(x);
+		getScreenCoordinates().setY(y);
 	}
 
 	@Override
@@ -203,5 +157,18 @@ public class DimensionPlayer extends GenericSprite implements Player
 		final long diff = nanoSeconds - lastMoved;
 		lastMoved = nanoSeconds;
 		return diff;
+	}
+
+	@Override
+	public Velocity getVelocity()
+	{
+		return velocity;
+	}
+
+	@Override
+	public int compareTo(Sprite o)
+	{
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

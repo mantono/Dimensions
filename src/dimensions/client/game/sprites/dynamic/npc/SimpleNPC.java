@@ -2,7 +2,10 @@ package dimensions.client.game.sprites.dynamic.npc;
 
 import java.security.SecureRandom;
 
-import dimensions.client.engine.Physics;
+import dimensions.client.engine.physics.Coordinate2D;
+import dimensions.client.engine.physics.Coordinate3D;
+import dimensions.client.engine.physics.Physics;
+import dimensions.client.engine.physics.Velocity;
 import dimensions.client.engine.spriteinterfaces.NPC;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
@@ -20,8 +23,8 @@ public class SimpleNPC extends GenericSprite implements NPC
 
 	public SimpleNPC()
 	{
-		setX(500 + rand.nextInt(600) - 300);
-		setY(350 + rand.nextInt(400) - 200);
+		getScreenCoordinates().setX((500 + rand.nextInt(600) - 300));
+		getScreenCoordinates().setY(350 + rand.nextInt(400) - 200);
 	}
 
 	@Override
@@ -72,14 +75,14 @@ public class SimpleNPC extends GenericSprite implements NPC
 		nextX += rand.nextInt(1) - 0.5;
 		nextY += nextX / 10;
 
-		if(getX() < 0)
+		if(getScreenCoordinates().getX() < 0)
 			nextX = 5;
-		else if(getX() > 600)
+		else if(getScreenCoordinates().getX() > 600)
 			nextX = 5;
 
-		if(getY() < 0)
+		if(getScreenCoordinates().getY() < 0)
 			nextY = 5;
-		else if(getY() > 600)
+		else if(getScreenCoordinates().getY() > 600)
 			nextY = 5;
 	}
 
@@ -90,33 +93,31 @@ public class SimpleNPC extends GenericSprite implements NPC
 	}
 
 	@Override
+	public Velocity getVelocity()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Coordinate2D getScreenCoordinates()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Coordinate3D getWorldCoordinates()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public int compareTo(Sprite o)
 	{
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	@Override
-	public double getVelocityX()
-	{
-		return velocityX;
-	}
-
-	@Override
-	public double getVelocityY()
-	{
-		return velocityY;
-	}
-
-	@Override
-	public void setVelocityX(double velocity)
-	{
-		this.velocityX = velocity;
-	}
-
-	@Override
-	public void setVelocityY(double velocity)
-	{
-		this.velocityX = velocity;
-	}
 }

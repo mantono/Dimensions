@@ -1,6 +1,8 @@
 package dimensions.client.game.sprites.statics;
 
 import dimensions.client.engine.AbstractSprite;
+import dimensions.client.engine.physics.Coordinate2D;
+import dimensions.client.engine.physics.Coordinate3D;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 
 public class Mud extends AbstractSprite
@@ -22,40 +24,19 @@ public class Mud extends AbstractSprite
 		return false;
 	}
 
-	@Override
-	public double getZ()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
-	public int compareTo(Sprite o)
+	public Coordinate2D getScreenCoordinates()
 	{
 		// TODO Auto-generated method stub
-		return 0;
+		return null;
 	}
 
 
 	@Override
-	public void setX(double x)
+	public Coordinate3D getWorldCoordinates()
 	{
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
-
-	@Override
-	public void setY(double y)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setZ(double z)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
 }

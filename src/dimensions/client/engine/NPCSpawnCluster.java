@@ -33,9 +33,9 @@ public class NPCSpawnCluster
 	private void createNPC() throws InstantiationException, IllegalAccessException
 	{
 		final NPC npc = npcClass.newInstance();
-		npc.setWorldX(centerX + random.nextInt(spawnRadius) - spawnRadius/2);
-		npc.setWorldY(centerY + random.nextInt(spawnRadius) - spawnRadius/2);
-		npc.setWorldZ(centerZ);
+		npc.getWorldCoordinates().setX(centerX + random.nextInt(spawnRadius) - spawnRadius/2);
+		npc.getWorldCoordinates().setY(centerY + random.nextInt(spawnRadius) - spawnRadius/2);
+		npc.getWorldCoordinates().setZ(centerZ);
 		queue.offer(npc);
 	}
 	
