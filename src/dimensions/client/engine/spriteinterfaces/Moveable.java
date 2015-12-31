@@ -7,6 +7,7 @@ public interface Moveable extends Sprite
 {
 	void updateVelocity(Physics physics);
 	Velocity getVelocity();
+	double getMass();
 	long updateLastMoved(long nanoSeconds);
 	boolean hasFixedScreenPosition();
 }

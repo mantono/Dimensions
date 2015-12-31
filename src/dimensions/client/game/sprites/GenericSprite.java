@@ -3,6 +3,7 @@ package dimensions.client.game.sprites;
 import dimensions.client.engine.AbstractSprite;
 import dimensions.client.engine.physics.Coordinate2D;
 import dimensions.client.engine.physics.Coordinate3D;
+import dimensions.client.engine.physics.Velocity;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 
 public class GenericSprite extends AbstractSprite
@@ -24,20 +25,4 @@ public class GenericSprite extends AbstractSprite
 	{
 		return 1000 < distanceFromScreen();
 	}
-
-	@Override
-	public Coordinate2D getScreenCoordinates()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Coordinate3D getWorldCoordinates()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 }

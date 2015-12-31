@@ -15,11 +15,8 @@ import javafx.scene.image.PixelReader;
 public class SimpleNPC extends GenericSprite implements NPC
 {
 	private final SecureRandom rand = new SecureRandom();
-	private double nextX = 1;
-	private double nextY = 1;
-	private double velocityY = 0;
-	private double velocityX = 0;
 	private long lastMoved = System.nanoTime();
+	private final Velocity velocity = new Velocity();
 
 	public SimpleNPC()
 	{
@@ -51,8 +48,8 @@ public class SimpleNPC extends GenericSprite implements NPC
 	@Override
 	public void updateVelocity(Physics physics)
 	{
-		velocityX = rand.nextDouble()*3 -1.5;
-		velocityY = rand.nextDouble()*3 -1.5;
+		velocity.accelerateX(rand.nextDouble()*3 -1.5);
+		velocity.accelerateY(rand.nextDouble()*3 -1.5);
 	}
 	
 	@Override
@@ -68,22 +65,16 @@ public class SimpleNPC extends GenericSprite implements NPC
 	{
 		return 100;
 	}
+	
+	@Override
+	public double getMass()
+	{
+		return 1;
+	}
 
 	@Override
 	public void act()
 	{
-		nextX += rand.nextInt(1) - 0.5;
-		nextY += nextX / 10;
-
-		if(getScreenCoordinates().getX() < 0)
-			nextX = 5;
-		else if(getScreenCoordinates().getX() > 600)
-			nextX = 5;
-
-		if(getScreenCoordinates().getY() < 0)
-			nextY = 5;
-		else if(getScreenCoordinates().getY() > 600)
-			nextY = 5;
 	}
 
 	@Override
@@ -95,29 +86,6 @@ public class SimpleNPC extends GenericSprite implements NPC
 	@Override
 	public Velocity getVelocity()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return velocity;
 	}
-
-	@Override
-	public Coordinate2D getScreenCoordinates()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Coordinate3D getWorldCoordinates()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int compareTo(Sprite o)
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

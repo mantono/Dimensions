@@ -43,9 +43,9 @@ public class DimensionPlayer extends GenericSprite implements Player
 			velocity.reduceX(0.8);
 
 		if(downPressed)
-			velocity.accelerateY(-acceleration);
-		else if(upPressed)
 			velocity.accelerateY(acceleration);
+		else if(upPressed)
+			velocity.accelerateY(-acceleration);
 		else
 			velocity.reduceY(0.8);
 
@@ -166,9 +166,8 @@ public class DimensionPlayer extends GenericSprite implements Player
 	}
 
 	@Override
-	public int compareTo(Sprite o)
+	public double getMass()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 }

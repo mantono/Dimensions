@@ -12,6 +12,7 @@ import dimensions.client.game.sprites.dynamic.npc.SimpleNPC;
 import dimensions.client.game.sprites.statics.Mud;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -37,14 +38,14 @@ public class Window extends Application
 		renderer.start();
 		InputEventManager inputs = new InputEventManager(stage.getScene());
 		Logic logic = new Logic(spriteManager);
-		Physics physics = new Physics(spriteManager);
+		Physics physics = new Physics(spriteManager, new Rectangle2D(400, 400, 400, 400));
 		
 		engine.addTask(spriteManager, 30);
 		engine.addTask(logic, 20);
 		engine.addTask(physics, 60);
 		
 		spriteManager.addSprite(new Mud());
-		spriteManager.addPlayer(new DimensionPlayer());
+		spriteManager.addSprite(new DimensionPlayer());
 		
 		for(int i = 0; i < 500; i++)
 			spriteManager.addSprite(new SimpleNPC());

@@ -83,15 +83,6 @@ public class SpriteManager implements Runnable
 		spriteQueue.offer(sprite, 10l, TimeUnit.MILLISECONDS);
 	}
 
-	public void addPlayer(Player player)
-	{
-		if(this.player == null)
-		{
-			this.player = player;
-			spriteQueue.offer(player);
-		}
-	}
-
 	private void removeSprites()
 	{
 		Iterator<Sprite> iterator = sprites.iterator();

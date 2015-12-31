@@ -1,6 +1,7 @@
 package dimensions.client.engine;
 
 import dimensions.client.engine.physics.Coordinate2D;
+import dimensions.client.engine.physics.Coordinate3D;
 import dimensions.client.engine.physics.Velocity;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import javafx.geometry.Rectangle2D;
@@ -13,7 +14,7 @@ public abstract class AbstractSprite implements Sprite
 	private final Image texture;
 	private final Rectangle2D bounds;
 	private final Coordinate2D screenPosition = new Coordinate2D();
-	private final Velocity velocity = new Velocity();
+	private final Coordinate3D worldPosition = new Coordinate3D();
 
 	protected AbstractSprite(final String fileName)
 	{
@@ -33,6 +34,18 @@ public abstract class AbstractSprite implements Sprite
 		final double y = GameSettings.heightPlayableArea / 2 - getHeight() / 2;
 		screenPosition.setX(x);
 		screenPosition.setY(y);
+	}
+	
+	@Override
+	public Coordinate2D getScreenCoordinates()
+	{
+		return screenPosition;
+	}
+
+	@Override
+	public Coordinate3D getWorldCoordinates()
+	{
+		return worldPosition;
 	}
 
 	@Override

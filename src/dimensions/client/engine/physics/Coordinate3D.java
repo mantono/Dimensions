@@ -10,6 +10,10 @@ public class Coordinate3D extends Coordinate2D
 		this.z = z;
 	}
 	
+	public Coordinate3D()
+	{
+	}
+
 	public double getZ()
 	{
 		return z;

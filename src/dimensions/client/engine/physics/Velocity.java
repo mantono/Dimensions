@@ -10,6 +10,12 @@ public class Velocity
 		this.x = x;
 		this.y = y;
 	}
+	
+	public Velocity(final Coordinate2D previousPosition, final Coordinate2D currentPosition)
+	{
+		this.x = currentPosition.getX() - previousPosition.getX();
+		this.y = currentPosition.getY() - previousPosition.getY();
+	}
 
 	public Velocity()
 	{
@@ -49,6 +55,11 @@ public class Velocity
 	public double getY()
 	{
 		return y;
+	}
+	
+	public Velocity getVelocityOfCollision(final Velocity other)
+	{
+		return new Velocity(x - other.x, y - other.y);
 	}
 
 	public double accelerateX(double acceleration)

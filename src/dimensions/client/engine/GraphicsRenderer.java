@@ -1,5 +1,7 @@
 package dimensions.client.engine;
 
+import dimensions.client.engine.physics.Coordinate2D;
+import dimensions.client.engine.physics.Velocity;
 import dimensions.client.game.sprites.GenericSprite;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
@@ -16,8 +18,8 @@ public class GraphicsRenderer extends AnimationTimer
 	private final Stage stage;
 	private final Scene scene;
 	private final Group root;
-	private final Canvas mainCanvas, playerCanvas, hudCanvas;
-	private final GraphicsContext mainRenderer, playerRenderer, hudRenderer;
+	private final Canvas mainCanvas, hudCanvas;
+	private final GraphicsContext mainRenderer, hudRenderer;
 
 	private final SpriteManager spriteManager;
 
@@ -38,15 +40,12 @@ public class GraphicsRenderer extends AnimationTimer
 		root.getChildren().add(screen);
 
 		this.mainCanvas = new Canvas(GameSettings.widthWindow, GameSettings.heightWindow);
-		this.playerCanvas = new Canvas(GameSettings.widthWindow, GameSettings.heightWindow);
 		this.hudCanvas = new Canvas(GameSettings.widthWindow, GameSettings.heightWindow);
 
 		this.mainRenderer = mainCanvas.getGraphicsContext2D();
-		this.playerRenderer = mainCanvas.getGraphicsContext2D();
 		this.hudRenderer = mainCanvas.getGraphicsContext2D();
 
 		this.root.getChildren().add(mainCanvas);
-		this.root.getChildren().add(playerCanvas);
 		this.root.getChildren().add(hudCanvas);
 	}
 
@@ -54,13 +53,23 @@ public class GraphicsRenderer extends AnimationTimer
 	{
 		mainRenderer.clearRect(0, 0, GameSettings.widthWindow, GameSettings.heightWindow);
 		spriteManager.getSprites().forEachRemaining(e -> e.render(mainRenderer));
-
-		spriteManager.getPlayer().render(playerRenderer);
 	}
 
+	private void playerMovementCompensation()
+	{
+		if(spriteManager.getPlayer() != null && spriteManager.getPlayer().hasFixedScreenPosition())
+		{
+			final Velocity playerVelocity = spriteManager.getPlayer().getVelocity();
+			//mainCanvas.setTranslateX(mainCanvas.getTranslateX() - playerVelocity.getX());
+			//mainCanvas.setTranslateY(playerVelocity.getY() + mainCanvas.getTranslateY());
+		}
+		
+	}
+	
 	@Override
 	public void handle(long now)
 	{
+		playerMovementCompensation();
 		renderGraphics();
 	}
 
