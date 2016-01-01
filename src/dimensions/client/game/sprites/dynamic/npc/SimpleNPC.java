@@ -48,8 +48,8 @@ public class SimpleNPC extends GenericSprite implements NPC
 	@Override
 	public void updateVelocity(Physics physics)
 	{
-		velocity.accelerateX(rand.nextDouble()*3 -1.5);
-		velocity.accelerateY(rand.nextDouble()*3 -1.5);
+		velocity.accelerateX(rand.nextDouble()*1 -0.5);
+		velocity.accelerateY(rand.nextDouble()*1 -0.5);
 	}
 	
 	@Override
