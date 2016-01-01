@@ -52,6 +52,7 @@ public class Window extends Application
 		
 		inputs.createDefaultKeyBindings(spriteManager.getPlayer());
 		inputs.addKeyBinding(KeyCode.ESCAPE, new PressEsacpe());
+		inputs.addKeyBinding(KeyCode.P, e -> engine.togglePause(e));
 
 		stage.show();
 	}
