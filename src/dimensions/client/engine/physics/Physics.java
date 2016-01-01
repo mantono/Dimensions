@@ -27,7 +27,7 @@ public class Physics implements Runnable
 		this.spriteManager = spriteManager;
 		this.fps = 60;
 		this.gravity = 1;
-		this.maxVelocityY = this.maxVelocityX = 2.5;
+		this.maxVelocityY = this.maxVelocityX = 2.8;
 		this.minVelocityX = this.minVelocityY = -this.maxVelocityX;
 		this.maxAccelerationX = this.maxAccelerationY = 1;
 		this.playerScreenBounds = playerScreenBounds;
@@ -92,28 +92,28 @@ public class Physics implements Runnable
 
 		if(playerCoords.getX() < playerScreenBounds.getMinX())
 		{
-			// playerVelocity.setX(0);
+			//playerVelocity.setX(0);
 			x = playerScreenBounds.getMinX() - playerCoords.getX();
-			playerCoords.setX(playerScreenBounds.getMinX());
+			//playerCoords.setX(playerScreenBounds.getMinX());
 		}
 		else if(playerCoords.getX() > playerScreenBounds.getMaxX())
 		{
-			// playerVelocity.setX(0);
+			//playerVelocity.setX(0);
 			x = playerScreenBounds.getMaxX() - playerCoords.getX();
-			playerCoords.setX(playerScreenBounds.getMaxX());
+			//playerCoords.setX(playerScreenBounds.getMaxX());
 		}
 
 		if(playerCoords.getY() < playerScreenBounds.getMinY())
 		{
-			// playerVelocity.setY(0);
+			//playerVelocity.setY(0);
 			y = playerScreenBounds.getMinY() - playerCoords.getY();
-			playerCoords.setY(playerScreenBounds.getMinY());
+			//playerCoords.setY(playerScreenBounds.getMinY());
 		}
 		else if(playerCoords.getY() > playerScreenBounds.getMaxY())
 		{
-			// playerVelocity.setY(0);
+			//playerVelocity.setY(0);
 			y = playerScreenBounds.getMaxY() - playerCoords.getY();
-			playerCoords.setY(playerScreenBounds.getMaxY());
+			//playerCoords.setY(playerScreenBounds.getMaxY());
 		}
 
 		return new Velocity(x, y);
