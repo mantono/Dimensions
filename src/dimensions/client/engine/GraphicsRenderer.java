@@ -54,22 +54,10 @@ public class GraphicsRenderer extends AnimationTimer
 		mainRenderer.clearRect(0, 0, GameSettings.widthWindow, GameSettings.heightWindow);
 		spriteManager.getSprites().forEachRemaining(e -> e.render(mainRenderer));
 	}
-
-	private void playerMovementCompensation()
-	{
-		if(spriteManager.getPlayer() != null && spriteManager.getPlayer().hasFixedScreenPosition())
-		{
-			final Velocity playerVelocity = spriteManager.getPlayer().getVelocity();
-			//mainCanvas.setTranslateX(mainCanvas.getTranslateX() - playerVelocity.getX());
-			//mainCanvas.setTranslateY(playerVelocity.getY() + mainCanvas.getTranslateY());
-		}
-		
-	}
 	
 	@Override
 	public void handle(long now)
 	{
-		playerMovementCompensation();
 		renderGraphics();
 	}
 
