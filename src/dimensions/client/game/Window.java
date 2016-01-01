@@ -39,7 +39,7 @@ public class Window extends Application
 		renderer.start();
 		InputEventManager inputs = new InputEventManager(stage.getScene());
 		Logic logic = new Logic(spriteManager);
-		Physics physics = new Physics(spriteManager, new Rectangle2D(GameSettings.widthWindow*0.375, GameSettings.heightWindow*0.375, GameSettings.widthWindow*0.25, GameSettings.heightWindow*0.25));		
+		Physics physics = new Physics(spriteManager, engine, new Rectangle2D(GameSettings.widthWindow*0.375, GameSettings.heightWindow*0.375, GameSettings.widthWindow*0.25, GameSettings.heightWindow*0.25));		
 		engine.addTask(spriteManager, 30);
 		engine.addTask(logic, 20);
 		engine.addTask(physics, 60);

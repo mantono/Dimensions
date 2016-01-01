@@ -1,13 +1,8 @@
 package dimensions.client.engine;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import dimensions.client.engine.physics.Physics;
-import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
 public class Engine
@@ -38,12 +33,20 @@ public class Engine
 	
 	public synchronized void togglePause(KeyEvent event)
 	{
+		if(event.getEventType() != KeyEvent.KEY_PRESSED)
+			return;
 		if(tasks.isPaused())
 			tasks.resume();
 		else
 			tasks.pause();
 	}
 
+	
+	public long timePaused()
+	{
+		return tasks.pauseDuration();
+	}
+	
 	public void addTask(Runnable task)
 	{
 		addTask(task, fps);

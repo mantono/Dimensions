@@ -5,19 +5,22 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class GameThreadExecutor extends ScheduledThreadPoolExecutor
+import com.sun.swing.internal.plaf.synth.resources.synth;
+
+class GameThreadExecutor extends ScheduledThreadPoolExecutor
 {
 	private boolean isPaused = false;
 	private long pauseStart, pauseEnd;
 	private final Lock lock = new ReentrantLock();
 	private final Condition unpausedState = lock.newCondition();
 
-	public GameThreadExecutor(int threadAmount)
+	GameThreadExecutor(int threadAmount)
 	{
 		super(threadAmount);
 		this.pauseStart = this.pauseEnd = System.nanoTime();
 	}
 
+	@Override
 	protected void beforeExecute(Thread thread, Runnable runnable)
 	{
 		super.beforeExecute(thread, runnable);
@@ -37,12 +40,12 @@ public class GameThreadExecutor extends ScheduledThreadPoolExecutor
 		}
 	}
 	
-	public synchronized boolean isPaused()
+	synchronized boolean isPaused()
 	{
 		return isPaused;
 	}
 
-	public void pause()
+	void pause()
 	{
 		lock.lock();
 		try
@@ -56,7 +59,7 @@ public class GameThreadExecutor extends ScheduledThreadPoolExecutor
 		}
 	}
 
-	public void resume()
+	void resume()
 	{
 		lock.lock();
 		try
@@ -71,10 +74,12 @@ public class GameThreadExecutor extends ScheduledThreadPoolExecutor
 		}
 	}
 	
-	public long pauseDuration()
+	synchronized long pauseDuration()
 	{
 		if(isPaused)
 			return -1;
-		return pauseEnd - pauseStart;
+		final long pauseDuration = pauseEnd - pauseStart;
+		pauseEnd = pauseStart = 0;
+		return pauseDuration;
 	}
 }
