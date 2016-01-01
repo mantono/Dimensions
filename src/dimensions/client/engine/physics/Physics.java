@@ -3,6 +3,7 @@ package dimensions.client.engine.physics;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import dimensions.client.engine.Engine;
 import dimensions.client.engine.GameSettings;
 import dimensions.client.engine.SpriteManager;
 import dimensions.client.engine.spriteinterfaces.Collidable;
@@ -14,16 +15,19 @@ public class Physics implements Runnable
 {
 	public static final long ONE_SECOND = 1_000_000_000;
 
+	private final Engine engine;
 	private final SpriteManager spriteManager;
 	private final Rectangle2D playerScreenBounds;
 	private final MovePhysics movementConsumer = new MovePhysics();
+	private long pauseDuration = 0;
 	private Velocity worldOffset = new Velocity(0, 0);
 
 	private double gravity, maxVelocityX, maxVelocityY, minVelocityX, minVelocityY, maxAccelerationX, maxAccelerationY,
 			fps;
 
-	public Physics(final SpriteManager spriteManager, final Rectangle2D playerScreenBounds)
+	public Physics(final SpriteManager spriteManager, final Engine engine, final Rectangle2D playerScreenBounds)
 	{
+		this.engine = engine;
 		this.spriteManager = spriteManager;
 		this.fps = 60;
 		this.gravity = 1;
@@ -33,9 +37,9 @@ public class Physics implements Runnable
 		this.playerScreenBounds = playerScreenBounds;
 	}
 
-	public Physics(final SpriteManager spriteManager)
+	public Physics(final SpriteManager spriteManager, final Engine engine)
 	{
-		this(spriteManager, new Rectangle2D(0, 0, GameSettings.widthWindow, GameSettings.heightWindow));
+		this(spriteManager,  engine, new Rectangle2D(0, 0, GameSettings.widthWindow, GameSettings.heightWindow));
 	}
 
 	private void checkForCollisons()
@@ -47,15 +51,6 @@ public class Physics implements Runnable
 	private void moveMoveables()
 	{
 		spriteManager.getMoveables().forEachRemaining(movementConsumer);
-		// final Player player = spriteManager.getPlayer();
-		// if(player.hasFixedScreenPosition())
-		// {
-		// final Velocity velocity = player.getVelocity();
-		// final Coordinate2D screenPosition = player.getScreenCoordinates();
-		// screenPosition.setX(screenPosition.getX() - velocity.getX());
-		// screenPosition.setY(screenPosition.getY() - velocity.getY());
-		// }
-
 	}
 
 	public double calculateInterpolation(final long nanoSecondsDiff)
@@ -67,6 +62,8 @@ public class Physics implements Runnable
 	@Override
 	public void run()
 	{
+		pauseDuration = engine.timePaused();
+		
 		final Player player = spriteManager.getPlayer();
 		if(playerIsOutsideBounds(player))
 		{
@@ -87,34 +84,17 @@ public class Physics implements Runnable
 		double x, y;
 		x = y = 0;
 
-		final Velocity playerVelocity = player.getVelocity();
 		final Coordinate2D playerCoords = player.getScreenCoordinates();
 
 		if(playerCoords.getX() < playerScreenBounds.getMinX())
-		{
-			//playerVelocity.setX(0);
 			x = playerScreenBounds.getMinX() - playerCoords.getX();
-			//playerCoords.setX(playerScreenBounds.getMinX());
-		}
 		else if(playerCoords.getX() > playerScreenBounds.getMaxX())
-		{
-			//playerVelocity.setX(0);
 			x = playerScreenBounds.getMaxX() - playerCoords.getX();
-			//playerCoords.setX(playerScreenBounds.getMaxX());
-		}
 
 		if(playerCoords.getY() < playerScreenBounds.getMinY())
-		{
-			//playerVelocity.setY(0);
 			y = playerScreenBounds.getMinY() - playerCoords.getY();
-			//playerCoords.setY(playerScreenBounds.getMinY());
-		}
 		else if(playerCoords.getY() > playerScreenBounds.getMaxY())
-		{
-			//playerVelocity.setY(0);
 			y = playerScreenBounds.getMaxY() - playerCoords.getY();
-			//playerCoords.setY(playerScreenBounds.getMaxY());
-		}
 
 		return new Velocity(x, y);
 	}
@@ -213,7 +193,7 @@ public class Physics implements Runnable
 		public void accept(Moveable m)
 		{
 			m.updateVelocity(Physics.this);
-			final long diff = m.updateLastMoved(System.nanoTime());
+			final long diff = m.updateLastMoved(System.nanoTime()) - pauseDuration;
 			final double interpolation = calculateInterpolation(diff);
 
 			final Velocity velocity = m.getVelocity();
