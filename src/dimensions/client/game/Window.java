@@ -14,6 +14,7 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -29,7 +30,7 @@ public class Window extends Application
 	public void start(Stage stage) throws InterruptedException
 	{
 		stage.setTitle("Greate game");
-		stage.setOnCloseRequest(new Quit());
+		stage.setOnCloseRequest(new CloseWindow());
 		
 		engine = new Engine(60, 5);
 		SpriteManager spriteManager = new SpriteManager();
@@ -38,8 +39,7 @@ public class Window extends Application
 		renderer.start();
 		InputEventManager inputs = new InputEventManager(stage.getScene());
 		Logic logic = new Logic(spriteManager);
-		Physics physics = new Physics(spriteManager, new Rectangle2D(400, 400, 400, 400));
-		
+		Physics physics = new Physics(spriteManager, new Rectangle2D(GameSettings.widthWindow*0.375, GameSettings.heightWindow*0.375, GameSettings.widthWindow*0.25, GameSettings.heightWindow*0.25));		
 		engine.addTask(spriteManager, 30);
 		engine.addTask(logic, 20);
 		engine.addTask(physics, 60);
@@ -51,18 +51,33 @@ public class Window extends Application
 			spriteManager.addSprite(new SimpleNPC());
 		
 		inputs.createDefaultKeyBindings(spriteManager.getPlayer());
+		inputs.addKeyBinding(KeyCode.ESCAPE, new PressEsacpe());
 
 		stage.show();
 	}
 	
-	private class Quit implements EventHandler<WindowEvent>
+	private void quit()
+	{
+			engine.stop();
+			System.out.println("Gracefully closed.");
+			System.exit(0);
+	}
+	
+	private class PressEsacpe implements EventHandler<KeyEvent>
+	{
+		@Override
+		public void handle(KeyEvent event)
+		{
+			quit();
+		}	
+	}
+	
+	private class CloseWindow implements EventHandler<WindowEvent>
 	{
 		@Override
 		public void handle(WindowEvent event)
 		{
-			engine.stop();
-			System.out.println("Gracefully closed.");
-			System.exit(0);
+			quit();
 		}	
 	}
 }
