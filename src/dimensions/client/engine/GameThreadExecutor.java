@@ -5,8 +5,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.sun.swing.internal.plaf.synth.resources.synth;
-
 class GameThreadExecutor extends ScheduledThreadPoolExecutor
 {
 	private boolean isPaused = false;
