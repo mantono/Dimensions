@@ -3,9 +3,12 @@ package dimensions.client.game.sprites.dynamic;
 import dimensions.client.engine.GameSettings;
 import dimensions.client.engine.physics.Physics;
 import dimensions.client.engine.physics.Velocity;
+import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelReader;
@@ -17,6 +20,7 @@ public class DimensionPlayer extends GenericSprite implements Player
 	private boolean leftPressed, rightPressed, upPressed, downPressed;
 	private final float acceleration = 0.1f;
 	private long lastMoved = System.nanoTime();
+	private boolean remove = false;
 
 	public DimensionPlayer()
 	{
@@ -60,14 +64,13 @@ public class DimensionPlayer extends GenericSprite implements Player
 	}
 
 	@Override
-	public Rectangle2D[] getHitBoxes()
+	public Bounds[] getHitBoxes()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return new Bounds[] {new BoundingBox(getScreenCoordinates().getX(), getScreenCoordinates().getY(), 55, 90)};
 	}
 
 	@Override
-	public boolean intersects(Rectangle2D[] bounds)
+	public boolean intersects(Bounds[] bounds)
 	{
 		return false;
 	}
@@ -169,5 +172,17 @@ public class DimensionPlayer extends GenericSprite implements Player
 	public double getMass()
 	{
 		return 1;
+	}
+
+	@Override
+	public void onCollision(Collidable other)
+	{
+		//remove = true;
+	}
+	
+	@Override
+	public boolean isReadyToRemove()
+	{
+		return false;
 	}
 }

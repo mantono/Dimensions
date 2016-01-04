@@ -38,6 +38,8 @@ public class CollisionMatrix
 		final Coordinate2D coords = collidable.getScreenCoordinates();
 		final int x = (int) (coords.getX() / divider);
 		final int y = (int) (coords.getY() / divider);
+		if(collisionSets[x][y] == null)
+			collisionSets[x][y] = new CollisionSet();
 		collisionSets[x][y].add(cRecord);
 	}
 
@@ -45,8 +47,8 @@ public class CollisionMatrix
 	{
 		final Set<CollisionRecord> collidables = new HashSet<CollisionRecord>();
 
-		final double indexDistance = radius/divider;
-		
+		final double indexDistance = radius / divider;
+
 		final int minX = (int) (x - indexDistance);
 		final int maxX = (int) (x + indexDistance);
 
@@ -63,7 +65,7 @@ public class CollisionMatrix
 					while(iterator.hasNext())
 					{
 						final CollisionRecord record = iterator.next();
-						if(record.isObsolete(Physics.ONE_SECOND/10))
+						if(record.isObsolete(Physics.ONE_SECOND / 10) || record.getCollidable().isReadyToRemove())
 							iterator.remove();
 						else
 							collidables.add(record);
@@ -71,7 +73,7 @@ public class CollisionMatrix
 				}
 			}
 		}
-		
+
 		return collidables;
 	}
 }

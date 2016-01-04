@@ -2,24 +2,26 @@ package dimensions.client.engine.physics;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
+import dimensions.client.engine.ConcurrentHashSet;
 import dimensions.client.engine.GameSettings;
 import dimensions.client.engine.spriteinterfaces.Collidable;
 
-public class CollisionTable extends HashSet<Collidable>
+public class CollisionTable extends ConcurrentHashSet<Collidable>
 {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6885356347649275542L;
+	private final static int[] PRIMES = {23, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869, 3145739, 6291469, 12582917, 25165843, 50331653, 100663319, 201326611, 402653189, 805306457, 1610612741};
+	
 	private CollisionSet[] collidableArray;
 	private int arraySize = 11;
 	private int primeIndex = -1;
-	private final static int[] PRIMES = {23, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869, 3145739, 6291469, 12582917, 25165843, 50331653, 100663319, 201326611, 402653189, 805306457, 1610612741};
+	private final BlockingQueue<Collidable> incoming = new ArrayBlockingQueue<Collidable>(100);
 
 	public CollisionTable(final int initialApproximateArraySize)
 	{
@@ -36,8 +38,6 @@ public class CollisionTable extends HashSet<Collidable>
 	@Override
 	public boolean add(Collidable collidable)
 	{
-		if(collidable.isOutsideScreen())
-			return false;
 		if(size() > arraySize * 5)
 			expand();
 		addToTable(new CollisionRecord(collidable), collidableArray);
@@ -74,13 +74,17 @@ public class CollisionTable extends HashSet<Collidable>
 	
 	public Set<CollisionRecord> getCollidables(final Collidable collidable, final int hashRadius)
 	{
+		System.out.println("\t\t\t" + collidable + " 0");
 		if(hashRadius < 0)
 			throw new IllegalArgumentException("Parameter hashRange cannot be negative.");
 		
+		System.out.println("\t\t\t" + collidable + " 1");
 		final Set<CollisionRecord> collisionCandidates = new HashSet<CollisionRecord>();
+		System.out.println("\t\t\t" + collidable + " 2");
 		final int index = hashIndex(collidable);
 		for(int i = index - hashRadius; i <= index + hashRadius; i++)
 				collisionCandidates.addAll(removeObsolete(collidableArray[i % collidableArray.length]));
+		System.out.println("\t\t\t" + collidable + " 3");
 		
 		return collisionCandidates;
 	}
@@ -91,7 +95,8 @@ public class CollisionTable extends HashSet<Collidable>
 		while(recordIterator.hasNext())
 		{
 			final CollisionRecord record = recordIterator.next();
-			if(record.isObsolete(Physics.ONE_SECOND/5) || record.getCollidable().isReadyToRemove())
+			//if(record.isObsolete(Physics.ONE_SECOND/5) || record.getCollidable().isReadyToRemove())
+			if(record.isObsolete(Long.MAX_VALUE) || record.getCollidable().isReadyToRemove()) //Use this when debugging
 				recordIterator.remove();
 		}
 		
@@ -135,7 +140,7 @@ public class CollisionTable extends HashSet<Collidable>
 	private int hashIndex(Collidable collidable)
 	{
 		final int hash = computeHash(collidable.getScreenCoordinates());
-		final int index = hash % arraySize;
+		final int index = Math.abs(hash % arraySize);
 		return index;
 	}
 

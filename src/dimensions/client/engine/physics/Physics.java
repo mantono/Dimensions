@@ -1,5 +1,6 @@
 package dimensions.client.engine.physics;
 
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
@@ -19,6 +20,7 @@ public class Physics implements Runnable
 	private final SpriteManager spriteManager;
 	private final Rectangle2D playerScreenBounds;
 	private final MovePhysics movementConsumer = new MovePhysics();
+	private final CollisionCheck collisionCheck = new CollisionCheck();
 	private long pauseDuration = 0;
 	private Velocity worldOffset = new Velocity(0, 0);
 
@@ -39,13 +41,13 @@ public class Physics implements Runnable
 
 	public Physics(final SpriteManager spriteManager, final Engine engine)
 	{
-		this(spriteManager,  engine, new Rectangle2D(0, 0, GameSettings.widthWindow, GameSettings.heightWindow));
+		this(spriteManager, engine, new Rectangle2D(0, 0, GameSettings.widthWindow, GameSettings.heightWindow));
 	}
 
 	private void checkForCollisons()
 	{
-		final Spliterator<Collidable> splitA = spriteManager.getCollidables();
-		final Spliterator<Collidable> splitB = spriteManager.getCollidables();
+		Spliterator<Collidable> cSplit = spriteManager.getCollidables();
+		cSplit.forEachRemaining(collisionCheck);
 	}
 
 	private void moveMoveables()
@@ -63,7 +65,7 @@ public class Physics implements Runnable
 	public void run()
 	{
 		pauseDuration = engine.timePaused();
-		
+
 		final Player player = spriteManager.getPlayer();
 		if(playerIsOutsideBounds(player))
 		{
@@ -76,7 +78,9 @@ public class Physics implements Runnable
 		}
 
 		moveMoveables();
+		System.out.println("Check collisions");
 		checkForCollisons();
+		System.out.println("Collisions checked");
 	}
 
 	private Velocity correctPlayerPosition(Player player)
@@ -205,6 +209,33 @@ public class Physics implements Runnable
 			final Coordinate2D screenPosition = m.getScreenCoordinates();
 			screenPosition.move(velocity);
 			screenPosition.move(worldOffset);
+		}
+
+	}
+
+	private class CollisionCheck implements Consumer<Collidable>
+	{
+
+		@Override
+		public void accept(Collidable t)
+		{
+			System.out.println("\tStarting collision check on" + t + ".");
+			Set<CollisionRecord> otherCollidables = spriteManager.getCollisionTable().getCollidables(t, 1);
+			System.out.println("\t\t1");
+			for(CollisionRecord record : otherCollidables)
+			{
+				System.out.println("\t\t2");
+				if(t.hasCollision(record.getCollidable()) && t != record.getCollidable())
+				{
+					System.out.println("\t\t3");
+					t.onCollision(record.getCollidable());
+					System.out.println("\t\t4");
+					record.getCollidable().onCollision(t);
+					System.out.println("\t\t5");
+				}
+				System.out.println("\t\t6");
+			}
+			System.out.println("\tCollision check on" + t + " completed.");
 		}
 
 	}

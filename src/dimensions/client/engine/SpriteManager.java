@@ -8,6 +8,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+
+import dimensions.client.engine.physics.CollisionMatrix;
+import dimensions.client.engine.physics.CollisionTable;
 import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.Moveable;
 import dimensions.client.engine.spriteinterfaces.NPC;
@@ -21,7 +24,8 @@ public class SpriteManager implements Runnable
 	private final Set<Sprite> sprites = Collections.newSetFromMap(new ConcurrentHashMap<Sprite, Boolean>());
 	private final Set<NPC> npcs = Collections.newSetFromMap(new ConcurrentHashMap<NPC, Boolean>());
 	private final Set<Moveable> moveables = Collections.newSetFromMap(new ConcurrentHashMap<Moveable, Boolean>());
-	private final Set<Collidable> collidables = Collections.newSetFromMap(new ConcurrentHashMap<Collidable, Boolean>());
+	//private final Set<Collidable> collidables = Collections.newSetFromMap(new ConcurrentHashMap<Collidable, Boolean>());
+	private final CollisionTable collidables = new CollisionTable();
 
 	private final BlockingQueue<Sprite> spriteQueue = new ArrayBlockingQueue<Sprite>(1000);
 
@@ -71,6 +75,11 @@ public class SpriteManager implements Runnable
 	public Spliterator<Moveable> getMoveables()
 	{
 		return moveables.spliterator();
+	}
+	
+	public CollisionTable getCollisionTable()
+	{
+		return collidables;
 	}
 
 	public Player getPlayer()

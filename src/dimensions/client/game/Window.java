@@ -47,12 +47,12 @@ public class Window extends Application
 		spriteManager.addSprite(new Mud());
 		spriteManager.addSprite(new DimensionPlayer());
 		
-		for(int i = 0; i < 500; i++)
-			spriteManager.addSprite(new SimpleNPC());
-		
 		inputs.createDefaultKeyBindings(spriteManager.getPlayer());
 		inputs.addKeyBinding(KeyCode.ESCAPE, new PressEsacpe());
 		inputs.addKeyBinding(KeyCode.P, e -> engine.togglePause(e));
+		
+		for(int i = 0; i < 500; i++)
+			spriteManager.addSprite(new SimpleNPC());
 
 		stage.show();
 	}

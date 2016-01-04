@@ -6,9 +6,12 @@ import dimensions.client.engine.physics.Coordinate2D;
 import dimensions.client.engine.physics.Coordinate3D;
 import dimensions.client.engine.physics.Physics;
 import dimensions.client.engine.physics.Velocity;
+import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.NPC;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.PixelReader;
 
@@ -17,6 +20,7 @@ public class SimpleNPC extends GenericSprite implements NPC
 	private final SecureRandom rand = new SecureRandom();
 	private long lastMoved = System.nanoTime();
 	private final Velocity velocity = new Velocity();
+	private boolean remove = false;
 
 	public SimpleNPC()
 	{
@@ -25,17 +29,9 @@ public class SimpleNPC extends GenericSprite implements NPC
 	}
 
 	@Override
-	public Rectangle2D[] getHitBoxes()
+	public Bounds[] getHitBoxes()
 	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean intersects(Rectangle2D[] bounds)
-	{
-		// TODO Auto-generated method stub
-		return false;
+		return new Bounds[] {new BoundingBox(getScreenCoordinates().getX(), getScreenCoordinates().getY(), 8, 8)};
 	}
 
 	@Override
@@ -87,5 +83,17 @@ public class SimpleNPC extends GenericSprite implements NPC
 	public Velocity getVelocity()
 	{
 		return velocity;
+	}
+	
+	@Override
+	public boolean isReadyToRemove()
+	{
+		return remove;
+	}
+
+	@Override
+	public void onCollision(Collidable other)
+	{
+		remove = true;
 	}
 }
