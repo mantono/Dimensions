@@ -2,7 +2,7 @@ package dimensions.client.engine.physics;
 
 import dimensions.client.engine.spriteinterfaces.Collidable;
 
-public class CollisionRecord
+public class CollisionRecord implements Comparable<CollisionRecord>
 {
 	private final Collidable collidable;
 	private final long timestamp;
@@ -26,5 +26,11 @@ public class CollisionRecord
 	public boolean isObsolete(long nanoSeconds)
 	{
 		return System.nanoTime() - timestamp > nanoSeconds;
+	}
+
+	@Override
+	public int compareTo(CollisionRecord o)
+	{
+		return (int) ((this.timestamp - o.timestamp) % Integer.MAX_VALUE);
 	}
 }
