@@ -221,7 +221,7 @@ public class Physics implements Runnable
 			Set<CollisionRecord> otherCollidables = spriteManager.getCollisionTable().getCollidables(t, 1);
 			for(CollisionRecord record : otherCollidables)
 			{
-				if(t.hasCollision(record.getCollidable()) && t != record.getCollidable())
+				if(t != record.getCollidable() && t.hasCollision(record.getCollidable()))
 				{
 					t.onCollision(record.getCollidable());
 					record.getCollidable().onCollision(t);

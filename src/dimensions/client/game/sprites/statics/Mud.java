@@ -4,6 +4,8 @@ import dimensions.client.engine.AbstractSprite;
 import dimensions.client.engine.physics.Coordinate2D;
 import dimensions.client.engine.physics.Coordinate3D;
 import dimensions.client.engine.spriteinterfaces.Sprite;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 
 public class Mud extends AbstractSprite
 {
@@ -22,6 +24,12 @@ public class Mud extends AbstractSprite
 	{
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	@Override
+	public Bounds getBounds()
+	{
+		return new BoundingBox(0, 0, 40, 40);
 	}
 
 

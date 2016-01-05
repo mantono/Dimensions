@@ -2,13 +2,13 @@ package dimensions.client.engine.spriteinterfaces;
 
 import dimensions.client.engine.physics.Coordinate2D;
 import dimensions.client.engine.physics.Coordinate3D;
-import javafx.geometry.Rectangle2D;
+import javafx.geometry.Bounds;
 import javafx.scene.canvas.GraphicsContext;
 
 public interface Sprite extends Comparable<Sprite>
 {
 	void render(GraphicsContext renderer);
-	Rectangle2D getBounds();
+	Bounds getBounds();
 	Coordinate2D getScreenCoordinates();
 	Coordinate3D getWorldCoordinates();
 	double getWidth();

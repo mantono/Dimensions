@@ -12,14 +12,12 @@ public abstract class AbstractSprite implements Sprite
 {
 	private final long timeCreated = System.currentTimeMillis();
 	private final Image texture;
-	private final Rectangle2D bounds;
 	private final Coordinate2D screenPosition = new Coordinate2D();
 	private final Coordinate3D worldPosition = new Coordinate3D();
 
 	protected AbstractSprite(final String fileName)
 	{
 		texture = new Image(fileName);
-		this.bounds = new Rectangle2D(screenPosition.getX(), screenPosition.getY(), texture.getWidth(), texture.getHeight());
 	}
 
 	protected Image getTexture()
@@ -100,12 +98,6 @@ public abstract class AbstractSprite implements Sprite
 	public long timeCreated()
 	{
 		return timeCreated;
-	}
-
-	@Override
-	public Rectangle2D getBounds()
-	{
-		return bounds;
 	}
 
 	@Override

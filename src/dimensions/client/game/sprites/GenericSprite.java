@@ -5,6 +5,8 @@ import dimensions.client.engine.physics.Coordinate2D;
 import dimensions.client.engine.physics.Coordinate3D;
 import dimensions.client.engine.physics.Velocity;
 import dimensions.client.engine.spriteinterfaces.Sprite;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 
 public class GenericSprite extends AbstractSprite
 {
@@ -24,5 +26,11 @@ public class GenericSprite extends AbstractSprite
 	public boolean isReadyToRemove()
 	{
 		return 1000 < distanceFromScreen();
+	}
+
+	@Override
+	public Bounds getBounds()
+	{
+		return new BoundingBox(0, 0, 40, 40);
 	}
 }

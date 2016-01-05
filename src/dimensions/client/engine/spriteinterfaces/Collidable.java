@@ -10,7 +10,7 @@ public interface Collidable extends Moveable
 	{
 		for(Bounds rectOther : bounds)
 			for(Bounds rectThis : getHitBoxes())
-				if(rectThis.contains(rectOther))
+				if(rectThis.intersects(rectOther))
 					return true;
 		
 		return false;
