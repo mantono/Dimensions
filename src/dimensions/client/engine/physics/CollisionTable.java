@@ -1,31 +1,35 @@
 package dimensions.client.engine.physics;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import dimensions.client.engine.ConcurrentHashSet;
 import dimensions.client.engine.GameSettings;
 import dimensions.client.engine.spriteinterfaces.Collidable;
 
-public class CollisionTable extends ConcurrentHashSet<Collidable>
+public class CollisionTable
 {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6885356347649275542L;
 	private final static int[] PRIMES = {23, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317, 196613, 393241, 786433, 1572869, 3145739, 6291469, 12582917, 25165843, 50331653, 100663319, 201326611, 402653189, 805306457, 1610612741};
-	
+
 	private CollisionSet[] collidableArray;
-	private int arraySize = 11;
-	private int primeIndex = -1;
-	private final BlockingQueue<Collidable> incoming = new ArrayBlockingQueue<Collidable>(100);
+	private volatile int arraySize = 11;
+	private volatile int primeIndex = -1;
+	private volatile int count = 0;
+	private final Lock hashLock = new ReentrantLock();
+	private final Condition hashFinished = hashLock.newCondition();
+	private final BlockingQueue<Collidable> incoming = new ArrayBlockingQueue<Collidable>(300);
 
 	public CollisionTable(final int initialApproximateArraySize)
 	{
-		super(initialApproximateArraySize);
 		setArraySize(initialApproximateArraySize);
 		collidableArray = new CollisionSet[arraySize];
 	}
@@ -35,57 +39,52 @@ public class CollisionTable extends ConcurrentHashSet<Collidable>
 		collidableArray = new CollisionSet[arraySize];
 	}
 
-	@Override
 	public boolean add(Collidable collidable)
 	{
+		return incoming.offer(collidable);
+	}
+
+	synchronized void addFromQueue()
+	{
+
+		if(incoming.isEmpty())
+			return;
 		if(size() > arraySize * 5)
 			expand();
-		addToTable(new CollisionRecord(collidable), collidableArray);
-		return super.add(collidable);		
+		while(!incoming.isEmpty())
+		{
+			addToTable(new CollisionRecord(incoming.poll()), collidableArray);
+			count++;
+		}
 	}
 
-	@Override
-	public boolean remove(Object object)
+	private int size()
 	{
-		if(size() < arraySize * 2)
-			shrink();
-		if(!super.remove(object))
-			return false;
-		if(!(object instanceof Collidable))
-			return false;
-		Collidable collidable = (Collidable) object;
-		final int i = hashIndex(collidable);
-		if(collidableArray[i] != null)
-			return collidableArray[i].remove(collidable);
-		return false;
+		return count;
 	}
 
-	@Override
-	public boolean removeAll(java.util.Collection<?> c)
-	{
-		final boolean removedElements = super.removeAll(c);
-		if(!removedElements)
-			return false;
-		final Iterator<?> iter = c.iterator();
-		while(iter.hasNext())
-			remove(iter.next());
-		return removedElements;
-	}
-	
 	public Set<CollisionRecord> getCollidables(final Collidable collidable, final int hashRadius)
 	{
-		System.out.println("\t\t\t" + collidable + " 0");
 		if(hashRadius < 0)
 			throw new IllegalArgumentException("Parameter hashRange cannot be negative.");
-		
-		System.out.println("\t\t\t" + collidable + " 1");
+
 		final Set<CollisionRecord> collisionCandidates = new HashSet<CollisionRecord>();
-		System.out.println("\t\t\t" + collidable + " 2");
-		final int index = hashIndex(collidable);
+
+		hashLock.lock();
+		waitForHash();
+
+		final int index = hashIndex(collidable, collidableArray);
 		for(int i = index - hashRadius; i <= index + hashRadius; i++)
-				collisionCandidates.addAll(removeObsolete(collidableArray[i % collidableArray.length]));
-		System.out.println("\t\t\t" + collidable + " 3");
-		
+		{
+			if(i < 0)
+				i = Math.abs(i);
+			final Set<CollisionRecord> set = collidableArray[i % collidableArray.length];
+			if(set != null)
+				collisionCandidates.addAll(removeObsolete(set));
+		}
+
+		hashLock.unlock();
+
 		return collisionCandidates;
 	}
 
@@ -95,32 +94,66 @@ public class CollisionTable extends ConcurrentHashSet<Collidable>
 		while(recordIterator.hasNext())
 		{
 			final CollisionRecord record = recordIterator.next();
-			//if(record.isObsolete(Physics.ONE_SECOND/5) || record.getCollidable().isReadyToRemove())
-			if(record.isObsolete(Long.MAX_VALUE) || record.getCollidable().isReadyToRemove()) //Use this when debugging
+			if(record.isObsolete(Physics.ONE_SECOND/5) || record.getCollidable().isReadyToRemove())
+			{
 				recordIterator.remove();
+				count--;
+				if(!record.getCollidable().isReadyToRemove()) 
+					add(record.getCollidable());
+			}
 		}
-		
+
 		return collisionCandidates;
 	}
 
 	private boolean addToTable(CollisionRecord record, CollisionSet[] array)
 	{
-		final int index = hashIndex(record.getCollidable());
-		if(array[index] == null)
-			array[index] = new CollisionSet();
-		return array[index].add(record);
+		try
+		{
+			hashLock.lock();
+			final int index = hashIndex(record.getCollidable(), array);
+			if(index >= array.length)
+				throw new ConcurrentModificationException("Illegal state: Trying to insert in index " + index + " but size of array is " + array.length + "(" + arraySize + ")\n");
+			if(array[index] == null)
+				array[index] = new CollisionSet();
+			return array[index].add(record);
+		}
+		finally
+		{
+			hashLock.unlock();
+		}
 	}
 
 	private void expand()
 	{
+		hashLock.lock();
 		advanceTotNextPrime();
 		rehashTable();
+		hashFinished.signalAll();
+		hashLock.unlock();
 	}
 
 	private void shrink()
 	{
+		hashLock.lock();
 		previousPrime();
 		rehashTable();
+		hashFinished.signalAll();
+		hashLock.unlock();
+	}
+
+	private void waitForHash()
+	{
+		try
+		{
+			while(collidableArray.length != arraySize)
+				hashFinished.await();
+		}
+		catch(InterruptedException e)
+		{
+			hashLock.unlock();
+			e.printStackTrace();
+		}
 	}
 
 	private void rehashTable()
@@ -129,18 +162,19 @@ public class CollisionTable extends ConcurrentHashSet<Collidable>
 		for(int i = 0; i < collidableArray.length; i++)
 		{
 			final CollisionSet set = collidableArray[i];
-			for(CollisionRecord record : set)
-				if(!record.getCollidable().isReadyToRemove())
-					addToTable(record, rehashedArray);
+			if(set != null)
+				for(CollisionRecord record : set)
+					if(!record.getCollidable().isReadyToRemove())
+						addToTable(record, rehashedArray);
 		}
 
 		collidableArray = rehashedArray;
 	}
 
-	private int hashIndex(Collidable collidable)
+	private int hashIndex(Collidable collidable, Object[] array)
 	{
 		final int hash = computeHash(collidable.getScreenCoordinates());
-		final int index = Math.abs(hash % arraySize);
+		final int index = Math.abs(hash % array.length);
 		return index;
 	}
 
@@ -167,7 +201,7 @@ public class CollisionTable extends ConcurrentHashSet<Collidable>
 		arraySize = PRIMES[--primeIndex];
 	}
 
-	private int setArraySize(int initialApproximateArraySize)
+	private void setArraySize(int initialApproximateArraySize)
 	{
 		for(int i = 0; i < PRIMES.length; i++)
 		{
@@ -177,6 +211,5 @@ public class CollisionTable extends ConcurrentHashSet<Collidable>
 				primeIndex = i;
 			}
 		}
-		return -1;
 	}
 }

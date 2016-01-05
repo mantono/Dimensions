@@ -78,9 +78,8 @@ public class Physics implements Runnable
 		}
 
 		moveMoveables();
-		System.out.println("Check collisions");
 		checkForCollisons();
-		System.out.println("Collisions checked");
+		spriteManager.getCollisionTable().addFromQueue();
 	}
 
 	private Velocity correctPlayerPosition(Player player)
@@ -219,23 +218,15 @@ public class Physics implements Runnable
 		@Override
 		public void accept(Collidable t)
 		{
-			System.out.println("\tStarting collision check on" + t + ".");
 			Set<CollisionRecord> otherCollidables = spriteManager.getCollisionTable().getCollidables(t, 1);
-			System.out.println("\t\t1");
 			for(CollisionRecord record : otherCollidables)
 			{
-				System.out.println("\t\t2");
 				if(t.hasCollision(record.getCollidable()) && t != record.getCollidable())
 				{
-					System.out.println("\t\t3");
 					t.onCollision(record.getCollidable());
-					System.out.println("\t\t4");
 					record.getCollidable().onCollision(t);
-					System.out.println("\t\t5");
 				}
-				System.out.println("\t\t6");
 			}
-			System.out.println("\tCollision check on" + t + " completed.");
 		}
 
 	}

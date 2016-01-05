@@ -9,7 +9,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import dimensions.client.engine.physics.CollisionMatrix;
 import dimensions.client.engine.physics.CollisionTable;
 import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.Moveable;
@@ -24,8 +23,8 @@ public class SpriteManager implements Runnable
 	private final Set<Sprite> sprites = Collections.newSetFromMap(new ConcurrentHashMap<Sprite, Boolean>());
 	private final Set<NPC> npcs = Collections.newSetFromMap(new ConcurrentHashMap<NPC, Boolean>());
 	private final Set<Moveable> moveables = Collections.newSetFromMap(new ConcurrentHashMap<Moveable, Boolean>());
-	//private final Set<Collidable> collidables = Collections.newSetFromMap(new ConcurrentHashMap<Collidable, Boolean>());
-	private final CollisionTable collidables = new CollisionTable();
+	private final Set<Collidable> collidables = Collections.newSetFromMap(new ConcurrentHashMap<Collidable, Boolean>());
+	private final CollisionTable collisions = new CollisionTable();
 
 	private final BlockingQueue<Sprite> spriteQueue = new ArrayBlockingQueue<Sprite>(1000);
 
@@ -45,14 +44,16 @@ public class SpriteManager implements Runnable
 			return;
 
 		sprites.add(sprite);
-		System.out.println(sprite + " added.");
 
 		if(sprite instanceof Moveable)
 			moveables.add((Moveable) sprite);
 		if(sprite instanceof NPC)
 			npcs.add((NPC) sprite);
 		if(sprite instanceof Collidable)
+		{
 			collidables.add((Collidable) sprite);
+			collisions.add((Collidable) sprite);
+		}
 		if(sprite instanceof Player && player == null)
 			player = (Player) sprite;
 	}
@@ -79,7 +80,7 @@ public class SpriteManager implements Runnable
 	
 	public CollisionTable getCollisionTable()
 	{
-		return collidables;
+		return collisions;
 	}
 
 	public Player getPlayer()
