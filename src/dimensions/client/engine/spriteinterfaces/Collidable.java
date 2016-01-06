@@ -5,7 +5,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.PixelReader;
 
-public interface Collidable extends Moveable
+public interface Collidable extends Sprite
 {
 	default boolean intersects(Bounds[] bounds)
 	{
