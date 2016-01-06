@@ -1,6 +1,7 @@
 package dimensions.client.game.sprites.dynamic;
 
 import dimensions.client.engine.GameSettings;
+import dimensions.client.engine.physics.Coordinate2D;
 import dimensions.client.engine.physics.Physics;
 import dimensions.client.engine.physics.Velocity;
 import dimensions.client.engine.spriteinterfaces.Collidable;

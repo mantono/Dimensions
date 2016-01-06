@@ -218,7 +218,7 @@ public class Physics implements Runnable
 		@Override
 		public void accept(Collidable t)
 		{
-			Set<CollisionRecord> otherCollidables = spriteManager.getCollisionTable().getCollidables(t, 1);
+			Set<CollisionRecord> otherCollidables = spriteManager.getCollisionTable().getCollidables(t, 2);
 			for(CollisionRecord record : otherCollidables)
 			{
 				if(t != record.getCollidable() && t.hasCollision(record.getCollidable()))

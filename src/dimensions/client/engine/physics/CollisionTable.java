@@ -94,7 +94,7 @@ public class CollisionTable
 		while(recordIterator.hasNext())
 		{
 			final CollisionRecord record = recordIterator.next();
-			if(record.isObsolete(Physics.ONE_SECOND/5) || record.getCollidable().isReadyToRemove())
+			if(record.isObsolete(Physics.ONE_SECOND/10) || record.getCollidable().isReadyToRemove())
 			{
 				recordIterator.remove();
 				count--;
@@ -173,7 +173,7 @@ public class CollisionTable
 
 	private int hashIndex(Collidable collidable, Object[] array)
 	{
-		final int hash = computeHash(collidable.getScreenCoordinates());
+		final int hash = computeHash(collidable.getCenterOfSprite());
 		final int index = Math.abs(hash % array.length);
 		return index;
 	}
