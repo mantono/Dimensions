@@ -7,6 +7,7 @@ import dimensions.client.engine.InputEventManager;
 import dimensions.client.engine.Logic;
 import dimensions.client.engine.SpriteManager;
 import dimensions.client.engine.physics.Physics;
+import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.game.sprites.dynamic.DimensionPlayer;
 import dimensions.client.game.sprites.dynamic.npc.SimpleNPC;
 import dimensions.client.game.sprites.statics.Mud;
@@ -45,14 +46,15 @@ public class Window extends Application
 		engine.addTask(physics, 60);
 		
 		spriteManager.addSprite(new Mud());
-		spriteManager.addSprite(new DimensionPlayer());
+		final Player player = new DimensionPlayer();
+		spriteManager.addSprite(player);
 		
-		for(int i = 0; i < 500; i++)
-			spriteManager.addSprite(new SimpleNPC());
-		
-		inputs.createDefaultKeyBindings(spriteManager.getPlayer());
+		inputs.createDefaultKeyBindings(player);
 		inputs.addKeyBinding(KeyCode.ESCAPE, new PressEsacpe());
 		inputs.addKeyBinding(KeyCode.P, e -> engine.togglePause(e));
+		
+		for(int i = 0; i < 1000; i++)
+			spriteManager.addSprite(new SimpleNPC());
 
 		stage.show();
 	}

@@ -1,5 +1,6 @@
 package dimensions.client.engine.physics;
 
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
@@ -19,6 +20,7 @@ public class Physics implements Runnable
 	private final SpriteManager spriteManager;
 	private final Rectangle2D playerScreenBounds;
 	private final MovePhysics movementConsumer = new MovePhysics();
+	private final CollisionCheck collisionCheck = new CollisionCheck();
 	private long pauseDuration = 0;
 	private Velocity worldOffset = new Velocity(0, 0);
 
@@ -39,13 +41,13 @@ public class Physics implements Runnable
 
 	public Physics(final SpriteManager spriteManager, final Engine engine)
 	{
-		this(spriteManager,  engine, new Rectangle2D(0, 0, GameSettings.widthWindow, GameSettings.heightWindow));
+		this(spriteManager, engine, new Rectangle2D(0, 0, GameSettings.widthWindow, GameSettings.heightWindow));
 	}
 
 	private void checkForCollisons()
 	{
-		final Spliterator<Collidable> splitA = spriteManager.getCollidables();
-		final Spliterator<Collidable> splitB = spriteManager.getCollidables();
+		Spliterator<Collidable> cSplit = spriteManager.getCollidables();
+		cSplit.forEachRemaining(collisionCheck);
 	}
 
 	private void moveMoveables()
@@ -63,7 +65,7 @@ public class Physics implements Runnable
 	public void run()
 	{
 		pauseDuration = engine.timePaused();
-		
+
 		final Player player = spriteManager.getPlayer();
 		if(playerIsOutsideBounds(player))
 		{
@@ -77,6 +79,7 @@ public class Physics implements Runnable
 
 		moveMoveables();
 		checkForCollisons();
+		spriteManager.getCollisionTable().addFromQueue();
 	}
 
 	private Velocity correctPlayerPosition(Player player)
@@ -205,6 +208,25 @@ public class Physics implements Runnable
 			final Coordinate2D screenPosition = m.getScreenCoordinates();
 			screenPosition.move(velocity);
 			screenPosition.move(worldOffset);
+		}
+
+	}
+
+	private class CollisionCheck implements Consumer<Collidable>
+	{
+
+		@Override
+		public void accept(Collidable t)
+		{
+			Set<CollisionRecord> otherCollidables = spriteManager.getCollisionTable().getCollidables(t, 2);
+			for(CollisionRecord record : otherCollidables)
+			{
+				if(t != record.getCollidable() && t.hasCollision(record.getCollidable()))
+				{
+					t.onCollision(record.getCollidable());
+					record.getCollidable().onCollision(t);
+				}
+			}
 		}
 
 	}

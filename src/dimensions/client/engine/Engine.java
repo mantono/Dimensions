@@ -1,5 +1,9 @@
 package dimensions.client.engine;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import dimensions.client.engine.physics.Physics;
@@ -30,7 +34,7 @@ public class Engine
 	{
 		tasks.shutdown();
 	}
-	
+
 	public synchronized void togglePause(KeyEvent event)
 	{
 		if(event.getEventType() != KeyEvent.KEY_PRESSED)
@@ -41,12 +45,11 @@ public class Engine
 			tasks.pause();
 	}
 
-	
 	public long timePaused()
 	{
 		return tasks.pauseDuration();
 	}
-	
+
 	public void addTask(Runnable task)
 	{
 		addTask(task, fps);

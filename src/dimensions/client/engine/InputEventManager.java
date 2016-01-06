@@ -45,6 +45,8 @@ public class InputEventManager
 	
 	public void createDefaultKeyBindings(Player player)
 	{
+		if(player == null)
+			throw new NullPointerException("Player is null.");
 		addKeyBinding(KeyCode.RIGHT, e -> player.rightPressed());
 		addKeyBinding(KeyCode.LEFT, e -> player.leftPressed());
 		addKeyBinding(KeyCode.UP, e -> player.upPressed());

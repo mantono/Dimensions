@@ -1,5 +1,6 @@
 package dimensions.client.engine;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -11,6 +12,7 @@ class GameThreadExecutor extends ScheduledThreadPoolExecutor
 	private long pauseStart, pauseEnd;
 	private final Lock lock = new ReentrantLock();
 	private final Condition unpausedState = lock.newCondition();
+	private final UncaughtExceptionHandler exceptionHandler = new ThreadExceptionHandler();
 
 	GameThreadExecutor(int threadAmount)
 	{
@@ -25,6 +27,7 @@ class GameThreadExecutor extends ScheduledThreadPoolExecutor
 		lock.lock();
 		try
 		{
+			thread.setUncaughtExceptionHandler(exceptionHandler);
 			while(isPaused)
 				unpausedState.await();
 		}
@@ -37,7 +40,21 @@ class GameThreadExecutor extends ScheduledThreadPoolExecutor
 			lock.unlock();
 		}
 	}
-	
+
+	@Override
+	public java.util.concurrent.ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, java.util.concurrent.TimeUnit unit)
+	{
+		return super.scheduleAtFixedRate(new ExceptionThrower(command), initialDelay, period, unit);
+	}
+
+	@Override
+	protected void afterExecute(Runnable runnable, Throwable throwable)
+	{
+		super.afterExecute(runnable, throwable);
+		if(throwable != null)
+			System.err.println("Thread pool got exception: " + throwable.getMessage() + "\n" + throwable.getCause());
+	}
+
 	synchronized boolean isPaused()
 	{
 		return isPaused;
@@ -71,7 +88,7 @@ class GameThreadExecutor extends ScheduledThreadPoolExecutor
 			lock.unlock();
 		}
 	}
-	
+
 	synchronized long pauseDuration()
 	{
 		if(isPaused)
