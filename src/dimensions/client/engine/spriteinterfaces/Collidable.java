@@ -18,7 +18,9 @@ public interface Collidable extends Moveable
 	
 	default boolean hasCollision(Collidable other)
 	{
-		return intersects(other.getHitBoxes());
+		if(getBounds().intersects(other.getBounds()))
+			return intersects(other.getHitBoxes());
+		return false;
 	}
 	
 	void onCollision(Collidable other);

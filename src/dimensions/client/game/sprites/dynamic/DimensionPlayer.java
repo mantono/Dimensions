@@ -38,7 +38,6 @@ public class DimensionPlayer extends GenericSprite implements Player
 	@Override
 	public void updateVelocity(Physics physics)
 	{
-
 		if(leftPressed)
 			velocity.accelerateX(-acceleration);
 		else if(rightPressed)
@@ -52,7 +51,6 @@ public class DimensionPlayer extends GenericSprite implements Player
 			velocity.accelerateY(-acceleration);
 		else
 			velocity.reduceY(0.8);
-
 	}
 
 
@@ -66,13 +64,7 @@ public class DimensionPlayer extends GenericSprite implements Player
 	@Override
 	public Bounds[] getHitBoxes()
 	{
-		return new Bounds[] {new BoundingBox(getScreenCoordinates().getX(), getScreenCoordinates().getY(), 55, 90)};
-	}
-
-	@Override
-	public boolean intersects(Bounds[] bounds)
-	{
-		return false;
+		return new Bounds[] {new BoundingBox(getScreenCoordinates().getX()+8, getScreenCoordinates().getY()+4, 38, 80)};
 	}
 
 	@Override
