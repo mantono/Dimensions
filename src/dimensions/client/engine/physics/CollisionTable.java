@@ -63,21 +63,25 @@ public class CollisionTable
 		return count;
 	}
 
-	public Set<CollisionRecord> getCollidables(final Collidable collidable, final int hashRadius)
+	public Set<CollisionRecord> getCollidables(final Collidable collidable, float scanPercentage)
 	{
-		if(hashRadius < 0)
-			throw new IllegalArgumentException("Parameter hashRange cannot be negative.");
+		if(scanPercentage < 0)
+			throw new IllegalArgumentException("Parameter scanPercentage cannot be negative.");
+		if(scanPercentage > 1)
+			throw new IllegalArgumentException("Parameter scanPercentage cannot be greater than 1."); 
 
 		final Set<CollisionRecord> collisionCandidates = new HashSet<CollisionRecord>();
 
 		hashLock.lock();
 		waitForHash();
+		
+		final int hashRadius = Math.round(arraySize*scanPercentage);
 
 		final int index = hashIndex(collidable, collidableArray);
 		for(int i = index - hashRadius; i <= index + hashRadius; i++)
 		{
 			if(i < 0)
-				i = Math.abs(i);
+				i = 0;
 			final Set<CollisionRecord> set = collidableArray[i % collidableArray.length];
 			if(set != null)
 				collisionCandidates.addAll(removeObsolete(set));

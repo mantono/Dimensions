@@ -54,7 +54,7 @@ public class SpriteManager implements Runnable
 			collidables.add((Collidable) sprite);
 			collisions.add((Collidable) sprite);
 		}
-		if(sprite instanceof Player && player == null)
+		if(player == null && sprite instanceof Player)
 			player = (Player) sprite;
 	}
 
