@@ -10,6 +10,7 @@ import dimensions.client.engine.SpriteManager;
 import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.Moveable;
 import dimensions.client.engine.spriteinterfaces.Player;
+import dimensions.client.engine.spriteinterfaces.Sprite;
 import javafx.geometry.Rectangle2D;
 
 public class PhysicsEngine implements Runnable
@@ -53,6 +54,14 @@ public class PhysicsEngine implements Runnable
 	{
 		final double frameDuration = ONE_SECOND / physics.getFPS();
 		return nanoSecondsDiff / frameDuration;
+	}
+
+	public double gravity(final Sprite sprite1, final Sprite sprite2)
+	{
+		final double productOfMass = sprite1.getMass() * sprite2.getMass();
+		final double distance = sprite1.getScreenCoordinates().distance(sprite2.getScreenCoordinates());
+		final double squareOfDistance = Math.pow(distance, 2);
+		return physics.getGravity() * (productOfMass / squareOfDistance);
 	}
 
 	@Override
@@ -133,16 +142,16 @@ public class PhysicsEngine implements Runnable
 		public void accept(Collidable t)
 		{
 			final double diagonalLength = Math.sqrt(Math.pow(t.getWidth(), 2) + Math.pow(t.getHeight(), 2));
-			final float additionalScanRange = (float) diagonalLength/1000;
-			
+			final float additionalScanRange = (float) diagonalLength / 1000;
+
 			Set<CollisionRecord> otherCollidables = spriteManager.getCollisionTable().getCollidables(t, 0.005f + additionalScanRange);
-			
+
 			/* Debug data */
 			final float amountOfCollidables = spriteManager.size();
-			final float ratio = (otherCollidables.size()/amountOfCollidables)*100;
+			final float ratio = (otherCollidables.size() / amountOfCollidables) * 100;
 			System.out.println(otherCollidables.size() + "/" + amountOfCollidables + " - " + ratio + "%");
 			/* End debug data */
-			
+
 			for(CollisionRecord record : otherCollidables)
 			{
 				if(t != record.getCollidable() && t.hasCollision(record.getCollidable()))
