@@ -4,7 +4,7 @@ import java.security.SecureRandom;
 
 import dimensions.client.engine.physics.Coordinate2D;
 import dimensions.client.engine.physics.Coordinate3D;
-import dimensions.client.engine.physics.Physics;
+import dimensions.client.engine.physics.PhysicsEngine;
 import dimensions.client.engine.physics.Velocity;
 import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.NPC;
@@ -42,7 +42,7 @@ public class SimpleNPC extends GenericSprite implements NPC
 	}
 
 	@Override
-	public void updateVelocity(Physics physics)
+	public void updateVelocity(PhysicsEngine physics)
 	{
 		velocity.accelerateX(rand.nextDouble()/2 -0.25);
 		velocity.accelerateY(rand.nextDouble()/2 -0.25);

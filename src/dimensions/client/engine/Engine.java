@@ -6,7 +6,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import dimensions.client.engine.physics.Physics;
+import dimensions.client.engine.physics.PhysicsEngine;
 import javafx.scene.input.KeyEvent;
 
 public class Engine
@@ -57,7 +57,7 @@ public class Engine
 
 	public void addTask(Runnable task, double fps)
 	{
-		final long interval = (long) (Physics.ONE_SECOND / fps);
+		final long interval = (long) (PhysicsEngine.ONE_SECOND / fps);
 		tasks.scheduleAtFixedRate(task, 0, interval, TimeUnit.NANOSECONDS);
 	}
 }

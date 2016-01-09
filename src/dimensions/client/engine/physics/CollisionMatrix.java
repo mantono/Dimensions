@@ -65,7 +65,7 @@ public class CollisionMatrix
 					while(iterator.hasNext())
 					{
 						final CollisionRecord record = iterator.next();
-						if(record.isObsolete(Physics.ONE_SECOND / 10) || record.getCollidable().isReadyToRemove())
+						if(record.isObsolete(PhysicsEngine.ONE_SECOND / 10) || record.getCollidable().isReadyToRemove())
 							iterator.remove();
 						else
 							collidables.add(record);

@@ -6,7 +6,8 @@ import dimensions.client.engine.GraphicsRenderer;
 import dimensions.client.engine.InputEventManager;
 import dimensions.client.engine.Logic;
 import dimensions.client.engine.SpriteManager;
-import dimensions.client.engine.physics.Physics;
+import dimensions.client.engine.physics.PhysicsEngine;
+import dimensions.client.engine.physics.WorldPhysics;
 import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.game.sprites.dynamic.DimensionPlayer;
 import dimensions.client.game.sprites.dynamic.npc.SimpleNPC;
@@ -40,7 +41,7 @@ public class Window extends Application
 		renderer.start();
 		InputEventManager inputs = new InputEventManager(stage.getScene());
 		Logic logic = new Logic(spriteManager);
-		Physics physics = new Physics(spriteManager, engine, new Rectangle2D(GameSettings.widthWindow*0.375, GameSettings.heightWindow*0.375, GameSettings.widthWindow*0.25, GameSettings.heightWindow*0.25));		
+		PhysicsEngine physics = new PhysicsEngine(new WorldPhysics(), spriteManager, engine, new Rectangle2D(GameSettings.widthWindow*0.375, GameSettings.heightWindow*0.375, GameSettings.widthWindow*0.25, GameSettings.heightWindow*0.25));		
 		engine.addTask(spriteManager, 30);
 		engine.addTask(logic, 20);
 		engine.addTask(physics, 60);

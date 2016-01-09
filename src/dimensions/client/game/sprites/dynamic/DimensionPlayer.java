@@ -2,7 +2,7 @@ package dimensions.client.game.sprites.dynamic;
 
 import dimensions.client.engine.GameSettings;
 import dimensions.client.engine.physics.Coordinate2D;
-import dimensions.client.engine.physics.Physics;
+import dimensions.client.engine.physics.PhysicsEngine;
 import dimensions.client.engine.physics.Velocity;
 import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.Player;
@@ -37,7 +37,7 @@ public class DimensionPlayer extends GenericSprite implements Player
 	}
 
 	@Override
-	public void updateVelocity(Physics physics)
+	public void updateVelocity(PhysicsEngine physics)
 	{
 		if(leftPressed)
 			velocity.accelerateX(-acceleration);

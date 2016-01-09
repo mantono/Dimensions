@@ -92,6 +92,11 @@ public class SpriteManager implements Runnable
 	{
 		spriteQueue.offer(sprite, 10l, TimeUnit.MILLISECONDS);
 	}
+	
+	public int size()
+	{
+		return sprites.size();
+	}
 
 	private void removeSprites()
 	{
@@ -105,7 +110,6 @@ public class SpriteManager implements Runnable
 				moveables.remove(sprite);
 				collidables.remove(sprite);
 				iterator.remove();
-				System.out.println(sprite + " removed (" + sprites.size() + ")");
 			}
 		}
 	}

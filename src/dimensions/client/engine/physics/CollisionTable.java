@@ -98,7 +98,7 @@ public class CollisionTable
 		while(recordIterator.hasNext())
 		{
 			final CollisionRecord record = recordIterator.next();
-			if(record.isObsolete(Physics.ONE_SECOND/10) || record.getCollidable().isReadyToRemove())
+			if(record.isObsolete(PhysicsEngine.ONE_SECOND/10) || record.getCollidable().isReadyToRemove())
 			{
 				recordIterator.remove();
 				count--;
