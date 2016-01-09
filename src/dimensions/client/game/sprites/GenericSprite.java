@@ -33,4 +33,10 @@ public class GenericSprite extends AbstractSprite
 	{
 		return new BoundingBox(0, 0, 40, 40);
 	}
+
+	@Override
+	public double getMass()
+	{
+		return 1;
+	}
 }

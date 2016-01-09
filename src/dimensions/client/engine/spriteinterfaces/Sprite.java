@@ -13,6 +13,7 @@ public interface Sprite extends Comparable<Sprite>
 	Coordinate3D getWorldCoordinates();
 	double getWidth();
 	double getHeight();
+	double getMass();
 	void move(double x, double y);
 	boolean isOutsideScreen();
 	double distanceFromScreen();

@@ -47,4 +47,10 @@ public class Mud extends AbstractSprite
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public double getMass()
+	{
+		return 1;
+	}
 }
