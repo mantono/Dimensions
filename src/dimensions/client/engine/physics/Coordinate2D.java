@@ -63,4 +63,10 @@ public class Coordinate2D
 	{
 		return Coordinate2D.distance(this, coords);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return x + ", " + y;
+	}
 }
