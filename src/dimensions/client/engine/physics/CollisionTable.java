@@ -318,7 +318,7 @@ public class CollisionTable
 	 * @param screenCoordinates the coordinates that will be computed.
 	 * @return the hash for this coordinate.
 	 */
-	private int computeHash(Coordinate2D screenCoordinates)
+	public int computeHash(Coordinate2D screenCoordinates)
 	{
 		final double d1 = screenCoordinates.distance(0, 0);
 		final double d2 = screenCoordinates.distance(0, GameSettings.heightWindow);
