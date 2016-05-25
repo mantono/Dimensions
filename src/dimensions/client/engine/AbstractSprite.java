@@ -1,26 +1,24 @@
 package dimensions.client.engine;
 
-import dimensions.client.engine.physics.Coordinate2D;
-import dimensions.client.engine.physics.Coordinate3D;
-import dimensions.client.engine.physics.Velocity;
 import dimensions.client.engine.spriteinterfaces.Sprite;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.image.Image;
 
 public abstract class AbstractSprite implements Sprite
 {
 	private final long timeCreated = System.currentTimeMillis();
 	private final Image texture;
-	private final Coordinate2D screenPosition = new Coordinate2D();
-	private final Coordinate3D worldPosition = new Coordinate3D();
+	private Point2D screenPosition = new Point2D(0, 0);
+	private Point3D worldPosition = new Point3D(0, 0, 0);
 
 	protected AbstractSprite(final String fileName)
 	{
 		texture = new Image(fileName);
 	}
 
-	protected Image getTexture()
+	@Override
+	public Image getTexture()
 	{
 		return texture;
 	}
@@ -28,40 +26,9 @@ public abstract class AbstractSprite implements Sprite
 	@Override
 	public void centerOnScreen()
 	{
-		final double x = GameSettings.widthPlayableArea / 2 - getWidth() / 2;
-		final double y = GameSettings.heightPlayableArea / 2 - getHeight() / 2;
-		screenPosition.setX(x);
-		screenPosition.setY(y);
-	}
-	
-	@Override
-	public Coordinate2D getScreenCoordinates()
-	{
-		return screenPosition;
-	}
-
-	@Override
-	public Coordinate3D getWorldCoordinates()
-	{
-		return worldPosition;
-	}
-
-	@Override
-	public double getWidth()
-	{
-		return texture.getWidth();
-	}
-
-	@Override
-	public double getHeight()
-	{
-		return texture.getHeight();
-	}
-
-	@Override
-	public void render(GraphicsContext context)
-	{
-		context.drawImage(texture, screenPosition.getX(), screenPosition.getY());
+		final double x = GameSettings.widthPlayableArea / 2 - getBounds().getWidth() / 2;
+		final double y = GameSettings.heightPlayableArea / 2 - getBounds().getHeight() / 2;
+		setPosition(new Point2D(x, y));
 	}
 
 	@Override
@@ -91,8 +58,24 @@ public abstract class AbstractSprite implements Sprite
 		return distanceX > distanceY ? distanceX : distanceY;
 
 	}
-	
-	
+
+	@Override
+	public Point2D getPosition()
+	{
+		return screenPosition;
+	}
+
+	@Override
+	public void setPosition(Point2D position)
+	{
+		this.screenPosition = position;
+	}
+
+	@Override
+	public Point3D getWorldCoordinates()
+	{
+		return worldPosition;
+	}
 
 	@Override
 	public long timeCreated()
@@ -103,7 +86,7 @@ public abstract class AbstractSprite implements Sprite
 	@Override
 	public void move(double x, double y)
 	{
-		final Velocity v = new Velocity(x, y);
-		screenPosition.move(v);
+		final Point2D movement = new Point2D(x, y);
+		this.screenPosition = screenPosition.add(movement);
 	}
 }

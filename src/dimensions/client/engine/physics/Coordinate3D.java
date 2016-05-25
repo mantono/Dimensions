@@ -1,5 +1,6 @@
 package dimensions.client.engine.physics;
 
+@Deprecated
 public class Coordinate3D extends Coordinate2D
 {
 	private double z = 0;

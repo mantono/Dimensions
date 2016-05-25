@@ -11,6 +11,8 @@ import dimensions.client.engine.spriteinterfaces.Collidable;
 import dimensions.client.engine.spriteinterfaces.Moveable;
 import dimensions.client.engine.spriteinterfaces.Player;
 import dimensions.client.engine.spriteinterfaces.Sprite;
+import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.geometry.Rectangle2D;
 
 public class PhysicsEngine implements Runnable
@@ -24,7 +26,7 @@ public class PhysicsEngine implements Runnable
 	private final MovePhysics movementConsumer = new MovePhysics();
 	private final CollisionCheck collisionCheck = new CollisionCheck();
 	private long pauseDuration = 0;
-	private Velocity worldOffset = new Velocity(0, 0);
+	private Point2D worldOffset = new Point2D(0, 0);
 
 	public PhysicsEngine(final Physics physics, final SpriteManager spriteManager, final Engine engine, final Rectangle2D playerScreenBounds)
 	{
@@ -56,10 +58,10 @@ public class PhysicsEngine implements Runnable
 		return nanoSecondsDiff / frameDuration;
 	}
 
-	public double gravity(final Sprite sprite1, final Sprite sprite2)
+	public double gravity(final Moveable sprite1, final Moveable sprite2)
 	{
 		final double productOfMass = sprite1.getMass() * sprite2.getMass();
-		final double distance = sprite1.getScreenCoordinates().distance(sprite2.getScreenCoordinates());
+		final double distance = sprite1.getPosition().distance(sprite2.getPosition());
 		final double squareOfDistance = Math.pow(distance, 2);
 		return physics.getGravity() * (productOfMass / squareOfDistance);
 	}
@@ -85,12 +87,12 @@ public class PhysicsEngine implements Runnable
 		spriteManager.getCollisionTable().addFromQueue();
 	}
 
-	private Velocity correctPlayerPosition(Player player)
+	private Point2D correctPlayerPosition(Player player)
 	{
 		double x, y;
 		x = y = 0;
 
-		final Coordinate2D playerCoords = player.getScreenCoordinates();
+		final Point2D playerCoords = player.getPosition();
 
 		if(playerCoords.getX() < playerScreenBounds.getMinX())
 			x = playerScreenBounds.getMinX() - playerCoords.getX();
@@ -102,14 +104,14 @@ public class PhysicsEngine implements Runnable
 		else if(playerCoords.getY() > playerScreenBounds.getMaxY())
 			y = playerScreenBounds.getMaxY() - playerCoords.getY();
 
-		return new Velocity(x, y);
+		return new Point2D(x, y);
 	}
 
 	private boolean playerIsOutsideBounds(Player player)
 	{
 		if(player == null)
 			return false;
-		final Coordinate2D playerCoords = player.getScreenCoordinates();
+		final Point2D playerCoords = player.getPosition();
 		return !playerScreenBounds.contains(playerCoords.getX(), playerCoords.getY());
 	}
 
@@ -118,19 +120,36 @@ public class PhysicsEngine implements Runnable
 		@Override
 		public void accept(Moveable m)
 		{
-			m.updateVelocity(PhysicsEngine.this);
 			final long diff = m.updateLastMoved(System.nanoTime()) - pauseDuration;
 			final double interpolation = calculateInterpolation(diff);
 
-			final Velocity velocity = m.getVelocity();
-			velocity.applyPhysics(physics);
-			velocity.interpolate(interpolation);
-			final Coordinate3D worldPosition = m.getWorldCoordinates();
+			final Point2D velocity = m.getVelocity();
+			velocity = applyPhysics(velocity, physics);
+			velocity = velocity.multiply(interpolation);
+			final Point3D worldPosition = m.getWorldCoordinates();
 			worldPosition.move(velocity);
 
-			final Coordinate2D screenPosition = m.getScreenCoordinates();
+			final Point2D screenPosition = m.getPosition();
 			screenPosition.move(velocity);
 			screenPosition.move(worldOffset);
+		}
+
+		private Point2D applyPhysics(Point2D velocity, Physics physics)
+		{
+			double x = velocity.getX();
+			double y = velocity.getY();
+			
+			if(x > physics.getMaxVelocityX())
+				x = physics.getMaxVelocityX();
+			else if(x < -physics.getMaxVelocityX())
+				x = -physics.getMaxVelocityX();
+
+			if(y > physics.getMaxVelocityY())
+				y = physics.getMaxVelocityY();
+			else if(y < -physics.getMaxVelocityY())
+				y = -physics.getMaxVelocityY();
+			
+			return new Point2D(x, y);
 		}
 
 	}

@@ -52,7 +52,7 @@ public class GraphicsRenderer extends AnimationTimer
 	private void renderGraphics()
 	{
 		mainRenderer.clearRect(0, 0, GameSettings.widthWindow, GameSettings.heightWindow);
-		spriteManager.getSprites().forEachRemaining(e -> e.render(mainRenderer));
+		spriteManager.getSprites().forEachRemaining(e -> mainRenderer.drawImage(e.getTexture(), e.getPosition().getX(), e.getPosition().getY()));
 	}
 	
 	@Override

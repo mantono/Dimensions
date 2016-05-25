@@ -10,14 +10,14 @@ import dimensions.client.engine.spriteinterfaces.Sprite;
 import dimensions.client.game.sprites.GenericSprite;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelReader;
 
 public class DimensionPlayer extends GenericSprite implements Player
 {
-	//private double velocityX, velocityY;
-	private final Velocity velocity = new Velocity();
+	private Point2D velocity = new Point2D(0, 0);
 	private boolean leftPressed, rightPressed, upPressed, downPressed;
 	private final float acceleration = 0.1f;
 	private long lastMoved = System.nanoTime();
@@ -29,29 +29,23 @@ public class DimensionPlayer extends GenericSprite implements Player
 		leftPressed = rightPressed = upPressed = downPressed = false;
 		centerOnScreen();
 	}	
-
+	
 	@Override
-	public void render(GraphicsContext context)
-	{
-		super.render(context);
-	}
-
-	@Override
-	public void updateVelocity(PhysicsEngine physics)
+	public void updateVelocity()
 	{
 		if(leftPressed)
-			velocity.accelerateX(-acceleration);
+			velocity = velocity.subtract(acceleration, 0);
 		else if(rightPressed)
-			velocity.accelerateX(acceleration);
+			velocity = velocity.add(acceleration, 0);
 		else
-			velocity.reduceX(0.8);
+			velocity = velocity.subtract(0.8, 0);
 
 		if(downPressed)
-			velocity.accelerateY(acceleration);
+			velocity = velocity.subtract(0, acceleration);
 		else if(upPressed)
-			velocity.accelerateY(-acceleration);
+			velocity = velocity.add(0, acceleration);
 		else
-			velocity.reduceY(0.8);
+			velocity = velocity.subtract(0, 0.8);
 	}
 
 
@@ -65,7 +59,7 @@ public class DimensionPlayer extends GenericSprite implements Player
 	@Override
 	public Bounds[] getHitBoxes()
 	{
-		return new Bounds[] {new BoundingBox(getScreenCoordinates().getX()+8, getScreenCoordinates().getY()+4, 38, 80)};
+		return new Bounds[] {new BoundingBox(getPosition().getX()+8, getPosition().getY()+4, 38, 80)};
 	}
 
 	@Override
@@ -105,7 +99,7 @@ public class DimensionPlayer extends GenericSprite implements Player
 	@Override
 	public void stop()
 	{
-		velocity.reduce(0);
+		velocity = new Point2D(0, 0);
 	}
 
 	@Override
@@ -133,21 +127,6 @@ public class DimensionPlayer extends GenericSprite implements Player
 	}
 
 	@Override
-	public boolean hasFixedScreenPosition()
-	{
-		return true;
-	}
-
-	@Override
-	public void centerOnScreen()
-	{
-		final double x = GameSettings.widthPlayableArea / 2 - getWidth() / 2;
-		final double y = GameSettings.heightPlayableArea / 2 - getHeight() / 2;
-		getScreenCoordinates().setX(x);
-		getScreenCoordinates().setY(y);
-	}
-
-	@Override
 	public synchronized long updateLastMoved(long nanoSeconds)
 	{
 		final long diff = nanoSeconds - lastMoved;
@@ -156,7 +135,7 @@ public class DimensionPlayer extends GenericSprite implements Player
 	}
 
 	@Override
-	public Velocity getVelocity()
+	public Point2D getVelocity()
 	{
 		return velocity;
 	}
@@ -177,5 +156,11 @@ public class DimensionPlayer extends GenericSprite implements Player
 	public boolean isReadyToRemove()
 	{
 		return false;
+	}
+
+	@Override
+	public void setVelocity(Point2D velocity)
+	{
+		this.velocity = velocity;
 	}
 }

@@ -7,6 +7,8 @@ import dimensions.client.engine.physics.Velocity;
 import dimensions.client.engine.spriteinterfaces.Sprite;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 
 public class GenericSprite extends AbstractSprite
 {
@@ -31,12 +33,7 @@ public class GenericSprite extends AbstractSprite
 	@Override
 	public Bounds getBounds()
 	{
-		return new BoundingBox(0, 0, 40, 40);
-	}
-
-	@Override
-	public double getMass()
-	{
-		return 1;
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

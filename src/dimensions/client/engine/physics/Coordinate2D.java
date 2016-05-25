@@ -1,5 +1,6 @@
 package dimensions.client.engine.physics;
 
+@Deprecated
 public class Coordinate2D
 {
 	private double x = 0;

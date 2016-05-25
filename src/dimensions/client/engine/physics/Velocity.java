@@ -1,5 +1,6 @@
 package dimensions.client.engine.physics;
 
+@Deprecated
 public class Velocity
 {
 	private double x = 0;

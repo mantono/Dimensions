@@ -1,19 +1,17 @@
 package dimensions.client.engine.spriteinterfaces;
 
-import dimensions.client.engine.physics.Coordinate2D;
-import dimensions.client.engine.physics.Coordinate3D;
 import javafx.geometry.Bounds;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
+import javafx.scene.image.Image;
 
 public interface Sprite extends Comparable<Sprite>
 {
-	void render(GraphicsContext renderer);
+	Image getTexture();
 	Bounds getBounds();
-	Coordinate2D getScreenCoordinates();
-	Coordinate3D getWorldCoordinates();
-	double getWidth();
-	double getHeight();
-	double getMass();
+	Point2D getPosition();
+	void setPosition(Point2D position);
+	Point3D getWorldCoordinates();
 	void move(double x, double y);
 	boolean isOutsideScreen();
 	double distanceFromScreen();
