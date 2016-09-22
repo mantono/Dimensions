@@ -81,8 +81,7 @@ public class KeyBinding
 	public int hashCode()
 	{
 		final byte prime = 17;
-		int hash = 1;
-		hash *= prime;
+		int hash = prime;
 		hash += eventType.hashCode();
 		hash *= prime;
 		hash += code.hashCode();
